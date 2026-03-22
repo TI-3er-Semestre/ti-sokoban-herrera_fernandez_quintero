@@ -1,10 +1,10 @@
-# Sokoban - Academic Version
+# Sokoban 
 
 ## Project Description
 Academic implementation of the classic Sokoban puzzle game developed as an integrative project for Software Engineering 2, Algorithms and Programming 2, and Discrete Structures 1 courses.
 
 ## Team Members
-- **Student 1:** [Full Name] - [Code]
+- **Student 1:** Dayanna Fernandez Nuñez - A00403756
 - **Student 2:** [Full Name] - [Code]
 - **Student 3:** [Full Name] - [Code]
 
@@ -17,17 +17,17 @@ Academic implementation of the classic Sokoban puzzle game developed as an integ
 ```
 sokoban-project/
 ├── src/
-│   ├── model/          # Game model classes
-│   ├── controller/     # Game controllers (MVC)
-│   ├── view/           # GUI components
-│   ├── util/           # Custom data structures
-│   └── test/           # JUnit test cases
-├── bin/                # Compiled .class files
-├── doc/                # Documentation
+│   ├── model/         
+│   ├── controller/    
+│   ├── view/           
+│   ├── util/        
+│   └── test/          
+├── bin/               
+├── doc/                
 │   ├── test_cases_design.md
 │   ├── class_diagram.pdf
 │   └── requirements.md
-├── lib/                # External libraries (Gson, JavaFX)
+├── lib/        
 └── README.md
 ```
 
