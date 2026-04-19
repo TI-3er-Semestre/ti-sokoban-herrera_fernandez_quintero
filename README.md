@@ -5,7 +5,7 @@ Academic implementation of the classic Sokoban puzzle game developed as an integ
 
 ## Team Members
 - **Student 1:** Dayanna Fernandez Nuñez - A00403756
-- **Student 2:** [Full Name] - [Code]
+- **Student 2:** Daniel Felipe Herrera  - A00413908
 - **Student 3:** [Full Name] - [Code]
 
 ## Course Information
