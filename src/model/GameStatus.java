@@ -1,6 +1,6 @@
 package model;
 
-public enum GameState {
+public enum GameStatus {
         PLAYING,
         WON,
         PAUSED

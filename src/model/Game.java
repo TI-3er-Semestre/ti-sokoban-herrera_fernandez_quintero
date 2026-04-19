@@ -13,10 +13,9 @@ public class Game {
     private int moveCount;
     private int pushCount;
     private long startTime;
-    private GameState state;
-    
+    private GameStatus state;
 
-    private CustomStack<GameState> undoStack;
+    private CustomStack<GameSnapshot> undoStack;
     private CustomQueue<Direction> inputBuffer;
     private TranspositionTable visitedStates;
 
@@ -24,7 +23,7 @@ public class Game {
         this.boxes = new CustomLinkedList<>();
         this.moveCount = 0;
         this.pushCount = 0;
-        this.state = GameState.PLAYING;
+        this.state = GameStatus.PLAYING;
         this.undoStack = new CustomStack<>();
         this.inputBuffer = new CustomQueue<>();
         this.visitedStates = new TranspositionTable();
@@ -34,9 +33,7 @@ public class Game {
         throw new UnsupportedOperationException("Not implemented yet");
     }
 
-
     public boolean move(Direction direction) {
-
         throw new UnsupportedOperationException("Not implemented yet");
     }
 
@@ -60,13 +57,11 @@ public class Game {
         throw new UnsupportedOperationException("Not implemented yet");
     }
 
-
     public boolean undo() {
         throw new UnsupportedOperationException("Not implemented yet");
     }
 
     public void resetLevel() {
-
         throw new UnsupportedOperationException("Not implemented yet");
     }
 
@@ -87,7 +82,6 @@ public class Game {
     }
 
     public void queueCommand(Direction direction) {
-
         throw new UnsupportedOperationException("Not implemented yet");
     }
 
@@ -95,31 +89,25 @@ public class Game {
         throw new UnsupportedOperationException("Not implemented yet");
     }
 
-
     public int getMoveCount() {
         return moveCount;
     }
-
 
     public int getPushCount() {
         return pushCount;
     }
 
-
     public long getElapsedTime() {
         throw new UnsupportedOperationException("Not implemented yet");
     }
 
-
-    public GameState getState() {
+    public GameStatus getState() {
         return state;
     }
-
 
     public Player getPlayer() {
         return player;
     }
-
 
     public CustomLinkedList<Box> getBoxes() {
         return boxes;
