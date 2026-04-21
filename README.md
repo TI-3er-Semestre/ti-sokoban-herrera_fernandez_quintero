@@ -6,7 +6,7 @@ Academic implementation of the classic Sokoban puzzle game developed as an integ
 ## Team Members
 - **Student 1:** Dayanna Fernandez Nuñez - A00403756
 - **Student 2:** Daniel Felipe Herrera  - A00413908
-- **Student 3:** [Full Name] - [Code]
+- **Student 3:** Andres David Quintero - A00401819
 
 ## Course Information
 - **Course:** Algorithms and Programming II (APO2)
