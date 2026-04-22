@@ -1,4 +1,4 @@
-package util;
+package struture;
 
 public class CustomQueue<T> {
     private Node<T> front;

@@ -1,4 +1,4 @@
-package util;
+package struture;
 
 public class TranspositionTable {
     private static final int DEFAULT_CAPACITY = 101; // Prime number

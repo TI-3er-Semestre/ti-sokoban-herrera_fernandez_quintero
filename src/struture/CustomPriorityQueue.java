@@ -1,4 +1,4 @@
-package util;
+package struture;
 
 public class CustomPriorityQueue<T extends Comparable<T>> {
     private T[] heap;

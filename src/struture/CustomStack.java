@@ -1,4 +1,4 @@
-package util;
+package struture;
 
 public class CustomStack<T> {
     private Node<T> top;

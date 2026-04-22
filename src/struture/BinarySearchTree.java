@@ -1,4 +1,4 @@
-package util;
+package struture;
 
 public class BinarySearchTree<T extends Comparable<T>> {
     private Node<T> root;
