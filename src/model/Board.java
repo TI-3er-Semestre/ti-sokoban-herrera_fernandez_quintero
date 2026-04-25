@@ -1,6 +1,6 @@
 package model;
 
-import structure.CustomLinkedList;
+import struture.CustomLinkedList;
 
 public class Board {
     private char[][] grid;
