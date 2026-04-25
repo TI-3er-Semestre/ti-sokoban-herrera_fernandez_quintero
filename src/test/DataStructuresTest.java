@@ -1,6 +1,6 @@
 package test;
 
-import util.*;
+import structure.*;
 import model.*;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -15,12 +15,32 @@ public class DataStructuresTest {
 
     @Test
     public void testQueue_MaintainsCommandOrder() {
-        fail("Test not implemented yet");
+        CustomQueue<Direction> queue = new CustomQueue<>();
+        queue.enqueue(Direction.UP);
+        queue.enqueue(Direction.RIGHT);
+        queue.enqueue(Direction.DOWN);
+        queue.enqueue(Direction.LEFT);
+
+        assertEquals(Direction.UP, queue.dequeue());
+        assertEquals(Direction.RIGHT, queue.dequeue());
+        assertEquals(Direction.DOWN, queue.dequeue());
+        assertEquals(Direction.LEFT, queue.dequeue());
+        assertTrue(queue.isEmpty());
     }
 
     @Test
     public void testPriorityQueue_TopKMaintenance() {
-        fail("Test not implemented yet");
+        CustomPriorityQueue<Integer> pq = new CustomPriorityQueue<>();
+        int[] values = {40, 15, 62, 28, 9, 51, 33, 47};
+        for (int v : values) {
+            pq.insert(v);
+        }
+        int prev = pq.extractMin();
+        while (!pq.isEmpty()) {
+            int current = pq.extractMin();
+            assertTrue(prev <= current);
+            prev = current;
+        }
     }
 
     @Test

@@ -1,4 +1,4 @@
-package struture;
+package structure;
 
 public class CustomStack<T> {
     private Node<T> top;

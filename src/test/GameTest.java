@@ -60,12 +60,13 @@ public class GameTest {
 
     @Test
     public void testUndo_SingleMove_RestoresPreviousState() {
-        fail("Test not implemented yet");
+        // requiere Game.move implementado por Persona C
+        fail("Pending: requires Game.move implementation");
     }
 
     @Test
     public void testUndo_BoxPush_RestoresBoxAndPlayer() {
-        fail("Test not implemented yet");
+        fail("Pending: requires Game.move implementation");
     }
 
     @Test
@@ -75,6 +76,6 @@ public class GameTest {
 
     @Test
     public void testMultipleUndos_Sequential_WorksCorrectly() {
-        fail("Test not implemented yet");
+        fail("Pending: requires Game.move implementation");
     }
 }
