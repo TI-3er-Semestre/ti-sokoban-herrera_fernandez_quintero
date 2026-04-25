@@ -1,4 +1,4 @@
-package util;
+package structure;
 
 public class CustomPriorityQueue<T extends Comparable<T>> {
     private Node<T> head;

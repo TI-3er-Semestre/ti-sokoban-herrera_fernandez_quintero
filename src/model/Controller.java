@@ -1,8 +1,6 @@
 package model;
 
-import model.ExperienceLevel;
-import model.Player;
-import util.CustomLinkedList;
+import structure.CustomLinkedList;
 
 public class Controller {
 

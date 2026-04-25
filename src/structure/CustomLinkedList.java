@@ -1,4 +1,4 @@
-package util;
+package structure;
 
 public class CustomLinkedList<T> {
     private Node<T> head;

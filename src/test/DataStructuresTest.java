@@ -1,6 +1,6 @@
 package test;
 
-import util.*;
+import structure.*;
 import model.*;
 
 import static org.junit.jupiter.api.Assertions.*;
