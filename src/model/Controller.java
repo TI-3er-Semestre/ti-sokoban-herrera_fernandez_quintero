@@ -1,6 +1,6 @@
 package model;
 
-import struture.CustomLinkedList;
+import structure.CustomLinkedList;
 
 public class Controller {
 
