@@ -1,9 +1,11 @@
-package util;
+package structure;
+
 
 public class CustomQueue<T> {
     private Node<T> front;
     private Node<T> rear;
     private int size;
+
 
     private static class Node<T> {
         T data;
@@ -21,45 +23,50 @@ public class CustomQueue<T> {
         this.size = 0;
     }
 
-    // Agrega un elemento al final de la cola
+    /** Agrega un elemento al final de la cola
+    @post aumenta el tamaño en 1, rear apunta al nuevo nodo
+    **/
     public void enqueue(T element) {
         Node<T> newNode = new Node<>(element);
-        if (rear == null) {
+
+        if (rear == null){
             front = newNode;
             rear = newNode;
+
         } else {
+
             rear.next = newNode;
             rear = newNode;
         }
+
         size++;
     }
 
-    // Elimina y retorna el elemento al frente de la cola
+    /** Elimina y retorna el elemento que esta en el frente
+     @throws IllegalStateException si la cola esta vacia
+     **/
     public T dequeue() {
-        if (isEmpty()) {
-            throw new IllegalStateException("La cola está vacía");
+        if (isEmpty()){
+            throw new IllegalStateException("Queue is empty");
         }
         T data = front.data;
         front = front.next;
-        if (front == null) {
+        if (front == null){
             rear = null;
         }
         size--;
         return data;
     }
 
-    // Retorna el elemento al frente sin eliminarlo
+    /** Retorna el elemento del frente sin eliminarlo
+     * @throws IllegalStateException si la cola esta vacia
+     * @return
+     */
     public T peek() {
-        if (isEmpty()) {
-            throw new IllegalStateException("La cola está vacía");
+        if (isEmpty()){
+            throw new IllegalStateException("Queue is empty");
         }
         return front.data;
-    }
-
-    public void clear() {
-        front = null;
-        rear = null;
-        size = 0;
     }
 
     public boolean isEmpty() {
@@ -68,5 +75,13 @@ public class CustomQueue<T> {
 
     public int size() {
         return size;
+    }
+
+    /** Vacia la cola completamente
+     */
+    public void clear() {
+        front = null;
+        rear = null;
+        size = 0;
     }
 }

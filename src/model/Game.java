@@ -1,9 +1,9 @@
 package model;
 
-import util.CustomLinkedList;
-import util.CustomStack;
-import util.CustomQueue;
-import util.TranspositionTable;
+import structure.CustomLinkedList;
+import structure.CustomStack;
+import structure.CustomQueue;
+import structure.TranspositionTable;
 
 public class Game {
     private Board board;

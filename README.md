@@ -20,7 +20,7 @@ sokoban-project/
 │   ├── model/         
 │   ├── controller/    
 │   ├── view/           
-│   ├── util/        
+│   ├── structure/        
 │   └── test/          
 ├── bin/               
 ├── doc/                
