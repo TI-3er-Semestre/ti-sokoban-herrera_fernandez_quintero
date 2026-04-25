@@ -23,19 +23,50 @@ public class CustomQueue<T> {
         this.size = 0;
     }
 
+    /** Agrega un elemento al final de la cola
+    @post aumenta el tamaño en 1, rear apunta al nuevo nodo
+    **/
     public void enqueue(T element) {
-        // TODO: Implement enqueue
-        throw new UnsupportedOperationException("Not implemented yet");
+        Node<T> newNode = new Node<>(element);
+
+        if (rear == null){
+            front = newNode;
+            rear = newNode;
+
+        } else {
+
+            rear.next = newNode;
+            rear = newNode;
+        }
+
+        size++;
     }
 
+    /** Elimina y retorna el elemento que esta en el frente
+     @throws IllegalStateException si la cola esta vacia
+     **/
     public T dequeue() {
-        // TODO: Implement dequeue
-        throw new UnsupportedOperationException("Not implemented yet");
+        if (isEmpty()){
+            throw new IllegalStateException("Queue is empty");
+        }
+        T data = front.data;
+        front = front.next;
+        if (front == null){
+            rear = null;
+        }
+        size--;
+        return data;
     }
 
+    /** Retorna el elemento del frente sin eliminarlo
+     * @throws IllegalStateException si la cola esta vacia
+     * @return
+     */
     public T peek() {
-        // TODO: Implement peek
-        throw new UnsupportedOperationException("Not implemented yet");
+        if (isEmpty()){
+            throw new IllegalStateException("Queue is empty");
+        }
+        return front.data;
     }
 
     public boolean isEmpty() {
@@ -46,8 +77,11 @@ public class CustomQueue<T> {
         return size;
     }
 
+    /** Vacia la cola completamente
+     */
     public void clear() {
-        // TODO: Implement clear
-        throw new UnsupportedOperationException("Not implemented yet");
+        front = null;
+        rear = null;
+        size = 0;
     }
 }
