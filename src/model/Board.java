@@ -1,6 +1,6 @@
 package model;
 
-import struture.CustomLinkedList;
+import structure.CustomLinkedList;
 
 import java.util.function.BooleanSupplier;
 
