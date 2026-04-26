@@ -62,7 +62,7 @@ public class Game {
         if (state != GameStatus.PLAYING) return false;
 
         // Guardar estado antes de mover para el undo
-        undoStack.push(new GameSnapshot(player.getPosition(), boxes));
+        undoStack.push(new GameSnapshot(player.getPosition(), boxes, moveCount, pushCount));
 
         Position currentPos = player.getPosition();
         Position nextPos = getNextPosition(currentPos, direction);
@@ -116,24 +116,16 @@ public class Game {
     // Deshace el último movimiento
     public boolean undo() {
         if (undoStack.isEmpty()) return false;
-
         GameSnapshot snapshot = undoStack.pop();
-
-        // Restaurar posición del jugador
         player.setPosition(snapshot.getPlayerPosition());
-
-        // Restaurar posiciones de las cajas
         for (int i = 0; i < boxes.size(); i++) {
             boxes.get(i).setPosition(snapshot.getBoxPositions().get(i));
-            boxes.get(i).setOnGoal(
-                    board.isGoal(
-                            snapshot.getBoxPositions().get(i).getRow(),
-                            snapshot.getBoxPositions().get(i).getColumn()
-                    )
-            );
+            boxes.get(i).setOnGoal(board.isGoal(
+                    snapshot.getBoxPositions().get(i).getRow(),
+                    snapshot.getBoxPositions().get(i).getColumn()));
         }
-
-        moveCount--;
+        moveCount = snapshot.getMoveCount();
+        pushCount = snapshot.getPushCount();
         state = GameStatus.PLAYING;
         return true;
     }
