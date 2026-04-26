@@ -1,52 +1,51 @@
 package structure;
 
 public class CustomPriorityQueue<T extends Comparable<T>> {
-    private Node<T> head;
+    private T[] heap;
     private int size;
+    private int capacity;
 
-    private static class Node<T> {
-        T data;
-        Node<T> next;
-
-        Node(T data) {
-            this.data = data;
-            this.next = null;
-        }
+    @SuppressWarnings("unchecked")
+    public CustomPriorityQueue() {
+        this.capacity = 10;
+        this.heap = (T[]) new Comparable[capacity];
+        this.size = 0;
     }
 
-    /** Inserta un elemento manteniendo el orden ascendente
-     * @post el elemento queda ubicado de forma que head siempre tiene el mínimo
+    @SuppressWarnings("unchecked")
+    public CustomPriorityQueue(int capacity) {
+        this.capacity = capacity;
+        this.heap = (T[]) new Comparable[capacity];
+        this.size = 0;
+    }
+
+    /** Inserta un elemento manteniendo la propiedad del min-heap
+     * @post el elemento queda ubicado en su posición correcta
      */
     public void insert(T element) {
-        Node<T> newNode = new Node<>(element);
-
-        // Caso 1: lista vacía o el nuevo es menor que el head
-        if (head == null || element.compareTo(head.data) < 0) {
-            newNode.next = head;
-            head = newNode;
-        } else {
-            // Caso 2: buscar la posición correcta recorriendo la lista
-            Node<T> current = head;
-            while (current.next != null && current.next.data.compareTo(element) < 0) {
-                current = current.next;
-            }
-            newNode.next = current.next;
-            current.next = newNode;
+        if (size == capacity) {
+            resize();
         }
+        heap[size] = element;
+        heapifyUp(size);
         size++;
     }
 
-    /** Elimina y retorna el elemento mínimo (el del frente)
+    /** Elimina y retorna el elemento mínimo
      * @throws IllegalStateException si la cola está vacía
      */
     public T extractMin() {
         if (isEmpty()) {
             throw new IllegalStateException("Priority queue is empty");
         }
-        T data = head.data;
-        head = head.next;
+        T min = heap[0];
+        heap[0] = heap[size - 1];
+        heap[size - 1] = null;
         size--;
-        return data;
+        if (!isEmpty()) {
+            heapifyDown(0);
+        }
+        return min;
     }
 
     /** Retorna el mínimo sin eliminarlo
@@ -56,7 +55,7 @@ public class CustomPriorityQueue<T extends Comparable<T>> {
         if (isEmpty()) {
             throw new IllegalStateException("Priority queue is empty");
         }
-        return head.data;
+        return heap[0];
     }
 
     public boolean isEmpty() {
@@ -67,10 +66,53 @@ public class CustomPriorityQueue<T extends Comparable<T>> {
         return size;
     }
 
-    /** Vacía la cola completamente
-     */
-    public void clear() {
-        head = null;
-        size = 0;
+    /** Duplica la capacidad del arreglo cuando se llena */
+    @SuppressWarnings("unchecked")
+    private void resize() {
+        capacity = capacity * 2;
+        T[] newHeap = (T[]) new Comparable[capacity];
+        for (int i = 0; i < size; i++) {
+            newHeap[i] = heap[i];
+        }
+        heap = newHeap;
+    }
+
+    /** Sube el elemento hacia arriba hasta cumplir la propiedad del heap */
+    private void heapifyUp(int index) {
+        while (index > 0) {
+            int parent = (index - 1) / 2;
+            if (heap[index].compareTo(heap[parent]) < 0) {
+                T temp = heap[index];
+                heap[index] = heap[parent];
+                heap[parent] = temp;
+                index = parent;
+            } else {
+                break;
+            }
+        }
+    }
+
+    /** Baja el elemento hacia abajo hasta cumplir la propiedad del heap */
+    private void heapifyDown(int index) {
+        while (index < size) {
+            int left = 2 * index + 1;
+            int right = 2 * index + 2;
+            int smallest = index;
+
+            if (left < size && heap[left].compareTo(heap[smallest]) < 0) {
+                smallest = left;
+            }
+            if (right < size && heap[right].compareTo(heap[smallest]) < 0) {
+                smallest = right;
+            }
+            if (smallest != index) {
+                T temp = heap[index];
+                heap[index] = heap[smallest];
+                heap[smallest] = temp;
+                index = smallest;
+            } else {
+                break;
+            }
+        }
     }
 }
