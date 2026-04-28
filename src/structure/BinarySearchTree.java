@@ -21,11 +21,7 @@ public class BinarySearchTree<T extends Comparable<T>> {
         this.size = 0;
     }
 
-    /**
-     * Inserts element maintaining BST property.
-     * Duplicates are ignored.
-     * Time: O(h) where h = tree height; O(log n) average, O(n) worst
-     */
+    // Inserta un elemento manteniendo la propiedad BST. Duplicados se ignoran
     public void insert(T element) {
         root = insertRec(root, element);
     }
@@ -38,14 +34,10 @@ public class BinarySearchTree<T extends Comparable<T>> {
         int cmp = element.compareTo(node.data);
         if (cmp < 0)      node.left  = insertRec(node.left,  element);
         else if (cmp > 0) node.right = insertRec(node.right, element);
-        // cmp == 0 → duplicate, ignore
         return node;
     }
 
-    /**
-     * Returns true if element exists in the tree.
-     * Time: O(h)
-     */
+    // Retorna true si el elemento existe en el arbol
     public boolean search(T element) {
         Node<T> current = root;
         while (current != null) {
@@ -56,11 +48,7 @@ public class BinarySearchTree<T extends Comparable<T>> {
         return false;
     }
 
-    /**
-     * Removes the element from the tree.
-     * @return true if element was found and removed
-     * Time: O(h)
-     */
+    // Elimina el elemento del arbol. Retorna true si fue encontrado y eliminado
     public boolean delete(T element) {
         int before = size;
         root = deleteRec(root, element);
@@ -75,23 +63,18 @@ public class BinarySearchTree<T extends Comparable<T>> {
         } else if (cmp > 0) {
             node.right = deleteRec(node.right, element);
         } else {
-            // Node to delete found
             size--;
             if (node.left == null)  return node.right;
             if (node.right == null) return node.left;
-            // Two children: replace with in-order successor (min of right subtree)
             Node<T> successor = findMinNode(node.right);
             node.data = successor.data;
-            size++; // deleteRec will decrement again
+            size++;
             node.right = deleteRec(node.right, successor.data);
         }
         return node;
     }
 
-    /**
-     * In-order traversal: returns elements in ascending order.
-     * Time: O(n), Space: O(n)
-     */
+    // Recorrido inorden: izquierda, raiz, derecha. Devuelve elementos ascendentes
     public CustomLinkedList<T> inOrderTraversal() {
         CustomLinkedList<T> result = new CustomLinkedList<>();
         inOrderRec(root, result);
@@ -105,10 +88,7 @@ public class BinarySearchTree<T extends Comparable<T>> {
         inOrderRec(node.right, result);
     }
 
-    /**
-     * Pre-order traversal: root → left → right.
-     * Time: O(n), Space: O(n)
-     */
+    // Recorrido preorden: raiz, izquierda, derecha
     public CustomLinkedList<T> preOrderTraversal() {
         CustomLinkedList<T> result = new CustomLinkedList<>();
         preOrderRec(root, result);
@@ -122,10 +102,7 @@ public class BinarySearchTree<T extends Comparable<T>> {
         preOrderRec(node.right, result);
     }
 
-    /**
-     * Post-order traversal: left → right → root.
-     * Time: O(n), Space: O(n)
-     */
+    // Recorrido postorden: izquierda, derecha, raiz
     public CustomLinkedList<T> postOrderTraversal() {
         CustomLinkedList<T> result = new CustomLinkedList<>();
         postOrderRec(root, result);
@@ -139,10 +116,7 @@ public class BinarySearchTree<T extends Comparable<T>> {
         result.add(node.data);
     }
 
-    /**
-     * Returns the minimum element in the tree.
-     * Time: O(h)
-     */
+    // Retorna el elemento minimo del arbol
     public T findMin() {
         if (isEmpty()) throw new IllegalStateException("Tree is empty");
         return findMinNode(root).data;
@@ -153,10 +127,7 @@ public class BinarySearchTree<T extends Comparable<T>> {
         return node;
     }
 
-    /**
-     * Returns the maximum element in the tree.
-     * Time: O(h)
-     */
+    // Retorna el elemento maximo del arbol
     public T findMax() {
         if (isEmpty()) throw new IllegalStateException("Tree is empty");
         Node<T> current = root;
@@ -164,11 +135,14 @@ public class BinarySearchTree<T extends Comparable<T>> {
         return current.data;
     }
 
-    public int size() { return size; }
+    public int size() {
+        return size;
+    }
 
-    public boolean isEmpty() { return size == 0; }
+    public boolean isEmpty() {
+        return size == 0;
+    }
 
-    /** Clears the entire tree. Time: O(1), Space: O(1) */
     public void clear() {
         root = null;
         size = 0;

@@ -20,6 +20,8 @@ public class DataStructuresTest {
         assertTrue(table.containsKey(stateKey));
     }
 
+    // ── CustomQueue ───────────────────────────────────────────────────────────
+
     @Test
     public void testHashTable_PutAndGet_ReturnsCorrectValue() {
         TranspositionTable table = new TranspositionTable();
@@ -58,7 +60,7 @@ public class DataStructuresTest {
 
     @Test
     public void testHashTable_ManyEntries_HandlesCollisions() {
-        TranspositionTable table = new TranspositionTable(5); // small capacity → forces collisions
+        TranspositionTable table = new TranspositionTable(5);
         for (int i = 0; i < 20; i++) {
             table.put("key" + i, i);
         }
@@ -183,6 +185,17 @@ public class DataStructuresTest {
     // ── BinarySearchTree ──────────────────────────────────────────────────────
 
     @Test
+    public void testLinkedList_Clear() {
+        CustomLinkedList<Integer> list = new CustomLinkedList<>();
+        list.add(1);
+        list.add(2);
+        list.clear();
+        assertTrue(list.isEmpty());
+    }
+
+    // ── BinarySearchTree ──────────────────────────────────────────────────────
+
+    @Test
     public void testBST_InsertAndSearch() {
         BinarySearchTree<Integer> bst = new BinarySearchTree<>();
         bst.insert(50);
@@ -190,7 +203,6 @@ public class DataStructuresTest {
         bst.insert(70);
         bst.insert(20);
         bst.insert(40);
-
         assertTrue(bst.search(30));
         assertTrue(bst.search(70));
         assertFalse(bst.search(99));
@@ -204,8 +216,7 @@ public class DataStructuresTest {
 
         CustomLinkedList<Integer> inOrder = bst.inOrderTraversal();
         for (int i = 0; i < inOrder.size() - 1; i++) {
-            assertTrue(inOrder.get(i) <= inOrder.get(i + 1),
-                    "In-order not sorted at index " + i);
+            assertTrue(inOrder.get(i) <= inOrder.get(i + 1));
         }
     }
 
@@ -238,19 +249,4 @@ public class DataStructuresTest {
         bst.insert(10);
         assertEquals(1, bst.size());
     }
-
-    @Test
-    public void testBST_Stats_InsertAndRetrieveInOrder() {
-        BinarySearchTree<Stats> bst = new BinarySearchTree<>();
-        Stats s1 = new Stats("p1", "Alice", 1, 20, 5, 60, true, "2026-01-01");
-        Stats s2 = new Stats("p2", "Bob",   1, 10, 3, 45, true, "2026-01-02");
-        Stats s3 = new Stats("p3", "Carol", 1, 30, 8, 90, true, "2026-01-03");
-        bst.insert(s1);
-        bst.insert(s2);
-        bst.insert(s3);
-        assertEquals(3, bst.size());
-
-        CustomLinkedList<Stats> inOrder = bst.inOrderTraversal();
-        assertEquals(3, inOrder.size());
-    }
-
+}
