@@ -123,14 +123,11 @@ public class TranspositionTable {
         capacity = newCapacity;
     }
 
-    public int size() {
-        return size;
-    }
+    public int size() { return size; }
 
-    public boolean isEmpty() {
-        return size == 0;
-    }
+    public boolean isEmpty() { return size == 0; }
 
+    /** Clears all buckets. Time: O(capacity), Space: O(1) */
     public void clear() {
         for (int i = 0; i < capacity; i++) table[i] = null;
         size = 0;

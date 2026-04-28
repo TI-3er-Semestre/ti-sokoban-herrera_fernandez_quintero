@@ -5,6 +5,7 @@ import model.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.BeforeEach;
 
 public class DataStructuresTest {
 
@@ -18,6 +19,8 @@ public class DataStructuresTest {
         table.put(stateKey, true);
         assertTrue(table.containsKey(stateKey));
     }
+
+    // ── CustomQueue ───────────────────────────────────────────────────────────
 
     @Test
     public void testHashTable_PutAndGet_ReturnsCorrectValue() {
@@ -119,7 +122,7 @@ public class DataStructuresTest {
         int prev = pq.extractMin();
         while (!pq.isEmpty()) {
             int current = pq.extractMin();
-            assertTrue(prev <= current);
+            assertTrue(prev <= current, "Priority queue not sorted: " + prev + " > " + current);
             prev = current;
         }
     }
@@ -169,6 +172,17 @@ public class DataStructuresTest {
         list.add(1);
         assertThrows(IndexOutOfBoundsException.class, () -> list.get(5));
     }
+
+    @Test
+    public void testLinkedList_Clear() {
+        CustomLinkedList<Integer> list = new CustomLinkedList<>();
+        list.add(1);
+        list.add(2);
+        list.clear();
+        assertTrue(list.isEmpty());
+    }
+
+    // ── BinarySearchTree ──────────────────────────────────────────────────────
 
     @Test
     public void testLinkedList_Clear() {
