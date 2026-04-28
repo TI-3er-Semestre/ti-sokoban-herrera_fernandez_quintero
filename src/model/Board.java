@@ -2,8 +2,6 @@ package model;
 
 import structure.CustomLinkedList;
 
-import java.util.function.BooleanSupplier;
-
 public class Board {
     private char[][] grid;
     private int width;
@@ -48,7 +46,7 @@ public class Board {
     }
 
     // Verifica si una posición es objetivo
-    public BooleanSupplier isGoal(int row, int col) {
+    public boolean isGoal(int row, int col) {
         for (int i = 0; i < goals.size(); i++) {
             Position goal = goals.get(i);
             if (goal.getRow() == row && goal.getColumn() == col) {
