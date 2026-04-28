@@ -1,7 +1,7 @@
 package structure;
 
 public class TranspositionTable {
-    private static final int DEFAULT_CAPACITY = 101; // Prime number
+    private static final int DEFAULT_CAPACITY = 101;
     private static final double LOAD_FACTOR = 0.75;
 
     private Entry[] table;
@@ -32,12 +32,7 @@ public class TranspositionTable {
         this.size = 0;
     }
 
-    /**
-     * Inserts or updates a key-value pair using separate chaining.
-     * @pre key != null
-     * @post key-value stored; size grows by 1 only if key was new
-     * Time: O(1) amortized
-     */
+    // Inserta o actualiza un par clave-valor con encadenamiento separado
     public void put(String key, Object value) {
         if ((double) size / capacity >= LOAD_FACTOR) {
             resize();
@@ -45,7 +40,6 @@ public class TranspositionTable {
         int index = hash(key);
         Entry current = table[index];
 
-        // Update existing key if found
         while (current != null) {
             if (current.key.equals(key)) {
                 current.value = value;
@@ -54,17 +48,13 @@ public class TranspositionTable {
             current = current.next;
         }
 
-        // Insert at front of chain
         Entry newEntry = new Entry(key, value);
         newEntry.next = table[index];
         table[index] = newEntry;
         size++;
     }
 
-    /**
-     * Returns the value for the given key, or null if absent.
-     * Time: O(1) amortized
-     */
+    // Retorna el valor para una clave, o null si no existe
     public Object get(String key) {
         int index = hash(key);
         Entry current = table[index];
@@ -75,10 +65,7 @@ public class TranspositionTable {
         return null;
     }
 
-    /**
-     * Returns true if the table contains the given key.
-     * Time: O(1) amortized
-     */
+    // Verifica si existe la clave
     public boolean containsKey(String key) {
         int index = hash(key);
         Entry current = table[index];
@@ -89,11 +76,7 @@ public class TranspositionTable {
         return false;
     }
 
-    /**
-     * Removes the entry for the given key.
-     * @return removed value, or null if key not found
-     * Time: O(1) amortized
-     */
+    // Elimina la entrada para la clave dada
     public Object remove(String key) {
         int index = hash(key);
         Entry current = table[index];
@@ -112,10 +95,7 @@ public class TranspositionTable {
         return null;
     }
 
-    /**
-     * Polynomial rolling hash: distributes keys uniformly across buckets.
-     * Time: O(k) where k = length of key
-     */
+    // Hash polinomial base 31
     private int hash(String key) {
         int h = 0;
         for (int i = 0; i < key.length(); i++) {
@@ -124,10 +104,7 @@ public class TranspositionTable {
         return Math.abs(h);
     }
 
-    /**
-     * Doubles capacity and rehashes all entries when load factor exceeded.
-     * Time: O(n), Space: O(n)
-     */
+    // Duplica capacidad y rehashea cuando se supera el factor de carga
     private void resize() {
         int newCapacity = capacity * 2 + 1;
         Entry[] newTable = new Entry[newCapacity];
