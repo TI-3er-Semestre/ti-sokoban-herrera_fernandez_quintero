@@ -10,10 +10,12 @@ public class GrafoMatriz<T> implements IGrafo<T> {
     private CustomLinkedList<Vertice<T>> vertices;
     private int capacidad;
     private int contador;
+    private int tiempo;
 
     public GrafoMatriz() {
         this.capacidad = 10;
         this.contador = 0;
+        this.tiempo = 0;
         this.vertices = new CustomLinkedList<>();
         this.matrizAdyacencia = new int[capacidad][capacidad];
         inicializarMatriz();
@@ -111,10 +113,48 @@ public class GrafoMatriz<T> implements IGrafo<T> {
     public int cantidadVertices() { return contador; }
 
     @Override
-    public CustomLinkedList<T> bfs(T origen) { return null; }
+    public CustomLinkedList<T> dfs(T origen) {
+        for (int i = 0; i < contador; i++) {
+            vertices.get(i).setColor(Vertice.Color.BLANCO);
+            vertices.get(i).setPredecesor(null);
+        }
+        tiempo = 0;
+        CustomLinkedList<T> resultado = new CustomLinkedList<>();
+
+        int origenIdx = obtenerIndice(origen);
+        if (origenIdx != -1) {
+            dfsVisitar(origenIdx, resultado);
+        }
+        for (int i = 0; i < contador; i++) {
+            if (vertices.get(i).getColor() == Vertice.Color.BLANCO) {
+                dfsVisitar(i, resultado);
+            }
+        }
+        return resultado;
+    }
+
+    private void dfsVisitar(int u, CustomLinkedList<T> resultado) {
+        tiempo++;
+        vertices.get(u).setTiempoDescubrimiento(tiempo);
+        vertices.get(u).setColor(Vertice.Color.GRIS);
+        resultado.add(vertices.get(u).getContenido());
+
+        for (int v = 0; v < contador; v++) {
+            if (matrizAdyacencia[u][v] != INF && u != v) {
+                if (vertices.get(v).getColor() == Vertice.Color.BLANCO) {
+                    vertices.get(v).setPredecesor(vertices.get(u));
+                    dfsVisitar(v, resultado);
+                }
+            }
+        }
+
+        vertices.get(u).setColor(Vertice.Color.NEGRO);
+        tiempo++;
+        vertices.get(u).setTiempoFinalizacion(tiempo);
+    }
 
     @Override
-    public CustomLinkedList<T> dfs(T origen) { return null; }
+    public CustomLinkedList<T> bfs(T origen) { return null; }
 
     @Override
     public int[][] floydWarshall() { return null; }
