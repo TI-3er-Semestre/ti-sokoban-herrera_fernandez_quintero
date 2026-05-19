@@ -27,20 +27,85 @@ public class GrafoMatriz<T> implements IGrafo<T> {
         }
     }
 
-    @Override
-    public void agregarVertice(T contenido) { }
+    private void redimensionar() {
+        int nuevaCapacidad = capacidad * 2;
+        int[][] nuevaMatriz = new int[nuevaCapacidad][nuevaCapacidad];
+        for (int i = 0; i < nuevaCapacidad; i++) {
+            for (int j = 0; j < nuevaCapacidad; j++) {
+                nuevaMatriz[i][j] = (i == j) ? 0 : INF;
+            }
+        }
+        for (int i = 0; i < capacidad; i++) {
+            for (int j = 0; j < capacidad; j++) {
+                nuevaMatriz[i][j] = matrizAdyacencia[i][j];
+            }
+        }
+        matrizAdyacencia = nuevaMatriz;
+        capacidad = nuevaCapacidad;
+    }
+
+    private int obtenerIndice(T contenido) {
+        for (int i = 0; i < contador; i++) {
+            if (vertices.get(i).getContenido().equals(contenido)) {
+                return i;
+            }
+        }
+        return -1;
+    }
 
     @Override
-    public void agregarArista(T origen, T destino, int peso) { }
+    public void agregarVertice(T contenido) {
+        if (contador == capacidad) {
+            redimensionar();
+        }
+        vertices.add(new Vertice<>(contenido));
+        contador++;
+    }
 
     @Override
-    public boolean existeArista(T origen, T destino) { return false; }
+    public void agregarArista(T origen, T destino, int peso) {
+        int i = obtenerIndice(origen);
+        int j = obtenerIndice(destino);
+        if (i == -1 || j == -1) {
+            throw new IllegalArgumentException("Uno o ambos vértices no existen en el grafo");
+        }
+        matrizAdyacencia[i][j] = peso;
+    }
 
     @Override
-    public int obtenerDistancia(T origen, T destino) { return INF; }
+    public boolean existeArista(T origen, T destino) {
+        int i = obtenerIndice(origen);
+        int j = obtenerIndice(destino);
+        if (i == -1 || j == -1) {
+            return false;
+        }
+        return matrizAdyacencia[i][j] != INF;
+    }
 
     @Override
-    public CustomLinkedList<T> obtenerVecinos(T vertice) { return null; }
+    public int obtenerDistancia(T origen, T destino) {
+        int i = obtenerIndice(origen);
+        int j = obtenerIndice(destino);
+        if (i == -1 || j == -1) {
+            throw new IllegalArgumentException("Uno o ambos vértices no existen en el grafo");
+        }
+        return matrizAdyacencia[i][j];
+    }
+
+    @Override
+    public CustomLinkedList<T> obtenerVecinos(T vertice) {
+        int i = obtenerIndice(vertice);
+        if (i == -1) {
+            throw new IllegalArgumentException("El vértice no existe en el grafo");
+        }
+        CustomLinkedList<T> vecinos = new CustomLinkedList<>();
+        for (int j = 0; j < contador; j++) {
+            if (matrizAdyacencia[i][j] != INF && i != j) {
+                vecinos.add(vertices.get(j).getContenido());
+            }
+        }
+        return vecinos;
+    }
 
     @Override
     public int cantidadVertices() { return contador; }
