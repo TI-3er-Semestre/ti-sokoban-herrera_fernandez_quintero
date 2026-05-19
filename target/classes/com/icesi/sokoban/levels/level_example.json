@@ -1,0 +1,23 @@
+{
+  "levelId": 1,
+  "name": "Basic Level",
+  "difficulty": "beginner",
+  "width": 7,
+  "height": 7,
+  "board": [
+    "#######",
+    "#.....#",
+    "#.B.G.#",
+    "#.....#",
+    "#..P..#",
+    "#.....#",
+    "#######"
+  ],
+  "legend": {
+    "#": "wall",
+    ".": "floor",
+    "P": "player",
+    "B": "box",
+    "G": "goal"
+  }
+}
