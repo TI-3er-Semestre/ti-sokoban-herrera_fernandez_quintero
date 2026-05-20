@@ -1,6 +1,6 @@
-package test;
+package com.icesi.sokoban.structure;
 
-import structure.CustomStack;
+import com.icesi.sokoban.structure.*;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
