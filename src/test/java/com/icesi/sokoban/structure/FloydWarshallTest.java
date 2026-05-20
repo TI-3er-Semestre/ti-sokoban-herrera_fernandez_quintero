@@ -1,7 +1,6 @@
 package com.icesi.sokoban.structure;
 
 import com.icesi.sokoban.structure.graph.GrafoMatriz;
-
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -28,7 +27,7 @@ public class FloydWarshallTest {
      * Floyd-Warshall debe descubrir esa mejora.
      */
     private GrafoMatriz<Integer> construirGrafoBase() {
-        GrafoMatriz<Integer> g = new GrafoMatriz<>(4);
+        GrafoMatriz<Integer> g = new GrafoMatriz<>();
         g.agregarVertice(0);
         g.agregarVertice(1);
         g.agregarVertice(2);
@@ -82,7 +81,7 @@ public class FloydWarshallTest {
     @Test
     public void floydWarshall_sinCamino_reconstruccionVacia() {
         // Grafo con un vertice aislado: 0->1, pero 2 sin conexiones.
-        GrafoMatriz<Integer> g = new GrafoMatriz<>(3);
+        GrafoMatriz<Integer> g = new GrafoMatriz<>();
         g.agregarVertice(0);
         g.agregarVertice(1);
         g.agregarVertice(2);
@@ -98,7 +97,7 @@ public class FloydWarshallTest {
     public void floydWarshall_pesosNegativosSinCiclo_funcionaCorrecto() {
         // Floyd-Warshall admite pesos negativos mientras no haya
         // ciclos de peso negativo.
-        GrafoMatriz<Integer> g = new GrafoMatriz<>(3);
+        GrafoMatriz<Integer> g = new GrafoMatriz<>();
         g.agregarVertice(0);
         g.agregarVertice(1);
         g.agregarVertice(2);

@@ -12,6 +12,9 @@ public class GrafoMatriz<T> implements IGrafo<T> {
     private int contador;
     private int tiempo;
 
+    // Floyd-Warshall: matriz de predecesores para reconstruir caminos
+    private int[][] siguiente;
+
     public GrafoMatriz() {
         this.capacidad = 10;
         this.contador = 0;
@@ -156,6 +159,67 @@ public class GrafoMatriz<T> implements IGrafo<T> {
     @Override
     public CustomLinkedList<T> bfs(T origen) { return null; }
 
+    // =========================================================================
+    // FLOYD-WARSHALL  (Persona C)
+    // =========================================================================
+
+    /**
+     * Floyd-Warshall: camino minimo entre TODOS los pares de vertices.
+     * Programacion dinamica. Complejidad Theta(V^3).
+     */
     @Override
-    public int[][] floydWarshall() { return null; }
+    public int[][] floydWarshall() {
+        int n = contador;
+        int[][] dist = new int[n][n];
+        siguiente = new int[n][n];
+
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                dist[i][j] = matrizAdyacencia[i][j];
+                if (i != j && matrizAdyacencia[i][j] != INF) {
+                    siguiente[i][j] = j;
+                } else {
+                    siguiente[i][j] = -1;
+                }
+            }
+        }
+
+        for (int k = 0; k < n; k++) {
+            for (int i = 0; i < n; i++) {
+                for (int j = 0; j < n; j++) {
+                    if (dist[i][k] == INF || dist[k][j] == INF) continue;
+                    int pasandoPorK = dist[i][k] + dist[k][j];
+                    if (pasandoPorK < dist[i][j]) {
+                        dist[i][j] = pasandoPorK;
+                        siguiente[i][j] = siguiente[i][k];
+                    }
+                }
+            }
+        }
+        return dist;
+    }
+
+    /**
+     * Reconstruye el camino minimo exacto entre dos vertices.
+     * Requiere haber ejecutado floydWarshall() antes.
+     */
+    public CustomLinkedList<T> reconstruirCamino(T origen, T destino) {
+        if (siguiente == null) {
+            throw new IllegalStateException("Debe ejecutar floydWarshall() antes");
+        }
+        int i = obtenerIndice(origen);
+        int j = obtenerIndice(destino);
+        if (i == -1 || j == -1) {
+            throw new IllegalArgumentException("Origen o destino no existe en el grafo");
+        }
+        CustomLinkedList<T> camino = new CustomLinkedList<>();
+        if (i != j && siguiente[i][j] == -1) return camino;
+
+        camino.add(vertices.get(i).getContenido());
+        while (i != j) {
+            i = siguiente[i][j];
+            camino.add(vertices.get(i).getContenido());
+        }
+        return camino;
+    }
 }
