@@ -1,7 +1,7 @@
-package test;
+package com.icesi.sokoban.structure;
 
-import structure.*;
-import model.*;
+import com.icesi.sokoban.structure.*;
+import com.icesi.sokoban.model.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
