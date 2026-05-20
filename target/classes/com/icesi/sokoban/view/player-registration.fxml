@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.control.Label?>
+
+<!--
+    VISTA — player-registration.fxml  (RF1 Registrar jugador)
+
+    ESQUELETO PENDIENTE (equipo):
+    Agregar los campos: nombre, correo, username, avatar, nivel de experiencia,
+    y un boton "Registrar" enlazado al PlayerRegistrationController.
+-->
+<VBox xmlns="http://javafx.com/javafx"
+      xmlns:fx="http://javafx.com/fxml"
+      fx:controller="com.icesi.sokoban.controller.PlayerRegistrationController"
+      spacing="10"
+      style="-fx-padding: 20; -fx-background-color: #0f0e17;">
+
+    <Label text="Registro de jugador (pendiente de implementar)"
+           style="-fx-text-fill: #fffffe; -fx-font-size: 16px;"/>
+</VBox>
