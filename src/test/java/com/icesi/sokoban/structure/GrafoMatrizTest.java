@@ -1,4 +1,4 @@
-package com.icesi.sokoban.model;
+package com.icesi.sokoban.structure;
 
 import com.icesi.sokoban.structure.graph.GrafoMatriz;
 import org.junit.jupiter.api.BeforeEach;
@@ -50,7 +50,7 @@ class GrafoMatrizTest {
     void dfs_grafoNoConexo_produceBosque() {
         grafo.agregarVertice("A");
         grafo.agregarVertice("B");
-        grafo.agregarVertice("C");
+        grafo.agregarVertice("C"); // C no está conectado
         grafo.agregarArista("A", "B", 1);
         assertEquals(3, grafo.dfs("A").size());
     }
