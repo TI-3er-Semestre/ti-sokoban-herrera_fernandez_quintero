@@ -199,6 +199,11 @@ public class GrafoMatriz<T> implements IGrafo<T> {
         return dist;
     }
 
+    @Override
+    public CustomLinkedList<int[]> prim() {
+        return null;
+    }
+
     /**
      * Reconstruye el camino minimo exacto entre dos vertices.
      * Requiere haber ejecutado floydWarshall() antes.
