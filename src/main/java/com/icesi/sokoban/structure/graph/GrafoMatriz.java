@@ -159,9 +159,9 @@ public class GrafoMatriz<T> implements IGrafo<T> {
     @Override
     public CustomLinkedList<T> bfs(T origen) { return null; }
 
-    // =========================================================================
+
     // FLOYD-WARSHALL  (Persona C)
-    // =========================================================================
+
 
     /**
      * Floyd-Warshall: camino minimo entre TODOS los pares de vertices.
@@ -201,7 +201,53 @@ public class GrafoMatriz<T> implements IGrafo<T> {
 
     @Override
     public CustomLinkedList<int[]> prim() {
-        return null;
+        if (contador == 0) return new CustomLinkedList<>();
+
+        boolean[] visitado = new boolean[contador]; // ¿ya está en el árbol?
+        int[] menorPeso = new int[contador];        // menor costo para llegar
+        int[] padre = new int[contador];            // de dónde vine
+
+        // Al inicio nadie está conectado
+        for (int i = 0; i < contador; i++) {
+            menorPeso[i] = INF;
+            padre[i] = -1;
+        }
+
+        // Arranco desde el vértice 0
+        menorPeso[0] = 0;
+
+        for (int i = 0; i < contador; i++) {
+
+            //Busco el vértice más barato que aún no haya visitado
+            int u = -1;
+            for (int v = 0; v < contador; v++) {
+                if (!visitado[v] && (u == -1 || menorPeso[v] < menorPeso[u])) {
+                    u = v;
+                }
+            }
+
+            //Lo marco como visitado
+            visitado[u] = true;
+
+            //Reviso sus vecinos: ¿puedo llegar más barato desde u?
+            for (int v = 0; v < contador; v++) {
+                boolean hayConexion = matrizAdyacencia[u][v] != INF;
+                boolean esMasBarato = matrizAdyacencia[u][v] < menorPeso[v];
+                if (!visitado[v] && hayConexion && esMasBarato) {
+                    menorPeso[v] = matrizAdyacencia[u][v];
+                    padre[v] = u;
+                }
+            }
+        }
+
+        //Armo la lista de aristas del árbol resultante
+        CustomLinkedList<int[]> mst = new CustomLinkedList<>();
+        for (int v = 1; v < contador; v++) {
+            if (padre[v] != -1) {
+                mst.add(new int[]{padre[v], v, menorPeso[v]});
+            }
+        }
+        return mst;
     }
 
     /**
