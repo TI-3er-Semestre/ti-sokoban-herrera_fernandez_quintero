@@ -1,6 +1,6 @@
-package test;
+package com.icesi.sokoban.structure;
 
-import structure.CustomLinkedList;
+import com.icesi.sokoban.structure.CustomLinkedList;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
 import static org.junit.jupiter.api.Assertions.*;
