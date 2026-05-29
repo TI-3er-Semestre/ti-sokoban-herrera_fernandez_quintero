@@ -222,4 +222,86 @@ public class GrafoMatriz<T> implements IGrafo<T> {
         }
         return camino;
     }
+
+    // =========================================================================
+    // KRUSKAL  (Persona C)
+    // =========================================================================
+
+    /**
+     * Algoritmo de Kruskal: encuentra el ARBOL GENERADOR MINIMO (AGM).
+     *
+     * Voraz (greedy):
+     *   1. Ordenar TODAS las aristas de menor a mayor peso.
+     *   2. Recorrerlas en orden. Si los extremos estan en conjuntos
+     *      distintos, agregar al AGM y unir los conjuntos. Si ya estan
+     *      en el mismo conjunto, descartar (formaria ciclo).
+     *   3. Terminar al tener n-1 aristas.
+     *
+     * El grafo se trata como NO DIRIGIDO: solo se procesa i < j.
+     *
+     * Complejidad: O(E log E) dominado por el ordenamiento.
+     *
+     * @return lista de aristas del AGM
+     */
+    public CustomLinkedList<Arista<T>> kruskal() {
+        CustomLinkedList<Arista<T>> agm = new CustomLinkedList<>();
+        if (contador == 0) return agm;
+
+        // 1. Recolectar todas las aristas distintas (solo i < j).
+        int maxAristas = contador * (contador - 1) / 2;
+        @SuppressWarnings("unchecked")
+        Arista<T>[] aristas = new Arista[maxAristas];
+        int total = 0;
+
+        int INF = Integer.MAX_VALUE / 2;
+        for (int i = 0; i < contador; i++) {
+            for (int j = i + 1; j < contador; j++) {
+                int p1 = matrizAdyacencia[i][j];
+                int p2 = matrizAdyacencia[j][i];
+                int peso = (p1 != INF) ? p1 : p2;
+                if (peso != INF) {
+                    aristas[total++] = new Arista<>(
+                            vertices.get(i).getContenido(),
+                            vertices.get(j).getContenido(),
+                            peso);
+                }
+            }
+        }
+
+        // 2. Ordenar por peso ascendente (selection sort).
+        for (int i = 0; i < total - 1; i++) {
+            int idxMin = i;
+            for (int j = i + 1; j < total; j++) {
+                if (aristas[j].compareTo(aristas[idxMin]) < 0) idxMin = j;
+            }
+            if (idxMin != i) {
+                Arista<T> t = aristas[i];
+                aristas[i] = aristas[idxMin];
+                aristas[idxMin] = t;
+            }
+        }
+
+        // 3. Recorrer aristas con Union-Find descartando ciclos.
+        UnionFind uf = new UnionFind(contador);
+        for (int k = 0; k < total; k++) {
+            Arista<T> a = aristas[k];
+            int iU = obtenerIndice(a.getOrigen());
+            int iV = obtenerIndice(a.getDestino());
+            if (uf.union(iU, iV)) {
+                agm.add(a);
+                if (agm.size() == contador - 1) break;
+            }
+        }
+        return agm;
+    }
+
+    /** Costo total del AGM: suma de los pesos de las aristas devueltas por kruskal(). */
+    public int costoAGM() {
+        CustomLinkedList<Arista<T>> agm = kruskal();
+        int total = 0;
+        for (int i = 0; i < agm.size(); i++) {
+            total += agm.get(i).getPeso();
+        }
+        return total;
+    }
 }
