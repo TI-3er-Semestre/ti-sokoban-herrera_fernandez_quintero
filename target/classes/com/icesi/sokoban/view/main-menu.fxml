@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.control.Label?>
+
+<!--
+    VISTA — main-menu.fxml  (RF3 cargar nivel, RF5 manual, RF9 cargar partida, RF11 ranking)
+
+    ESQUELETO PENDIENTE (equipo):
+    Agregar botones: Jugar, Cargar partida, Ranking, Manual, Salir.
+-->
+<VBox xmlns="http://javafx.com/javafx"
+      xmlns:fx="http://javafx.com/fxml"
+      fx:controller="com.icesi.sokoban.controller.MainMenuController"
+      spacing="10"
+      style="-fx-padding: 20; -fx-background-color: #0f0e17;">
+
+    <Label text="Menu principal (pendiente de implementar)"
+           style="-fx-text-fill: #fffffe; -fx-font-size: 16px;"/>
+</VBox>
