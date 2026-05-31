@@ -395,4 +395,8 @@ public class GrafoMatriz<T> implements IGrafo<T> {
         }
         return total;
     }
+
+    public CustomLinkedList<Vertice<T>> getVertices() {
+        return vertices;
+    }
 }

@@ -116,4 +116,46 @@ class GrafoMatrizTest {
         assertEquals(1, mst.size());
         assertEquals(7, mst.get(0)[2]);
     }
+
+    @Test
+    void bfs_grafoConexo_visitaTodosLosVertices() {
+        grafo.agregarVertice("A");
+        grafo.agregarVertice("B");
+        grafo.agregarVertice("C");
+        grafo.agregarArista("A", "B", 1);
+        grafo.agregarArista("B", "C", 1);
+        assertEquals(3, grafo.bfs("A").size());
+    }
+
+    @Test
+    void bfs_calculaDistanciaMinima() {
+        grafo.agregarVertice("A");
+        grafo.agregarVertice("B");
+        grafo.agregarVertice("C");
+        grafo.agregarArista("A", "B", 1);
+        grafo.agregarArista("B", "C", 1);
+        grafo.bfs("A");
+        // C está a distancia 2 desde A
+        assertEquals(2, grafo.getVertices().get(2).getDistancia());
+    }
+
+    @Test
+    void bfs_visitaPorNiveles() {
+        grafo.agregarVertice("A");
+        grafo.agregarVertice("B");
+        grafo.agregarVertice("C");
+        grafo.agregarVertice("D");
+        grafo.agregarArista("A", "B", 1);
+        grafo.agregarArista("A", "C", 1);
+        grafo.agregarArista("B", "D", 1);
+        CustomLinkedList<String> resultado = grafo.bfs("A");
+        // A es primero, luego B y C (nivel 1), luego D (nivel 2)
+        assertEquals("A", resultado.get(0));
+    }
+
+    @Test
+    void bfs_verticeInexistente_retornaListaVacia() {
+        grafo.agregarVertice("A");
+        assertEquals(0, grafo.bfs("Z").size());
+    }
 }
