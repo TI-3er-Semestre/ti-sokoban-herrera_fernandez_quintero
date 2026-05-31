@@ -11,10 +11,16 @@ public interface IGrafo<T> {
     boolean existeArista(T origen, T destino);
 
     int obtenerDistancia(T origen, T destino);
+
     CustomLinkedList<T> obtenerVecinos(T vertice);
 
     int cantidadVertices();
+
     CustomLinkedList<T> bfs(T origen);
+
     CustomLinkedList<T> dfs(T origen);
+
     int[][] floydWarshall();
+
+    CustomLinkedList<int[]> prim();
 }
