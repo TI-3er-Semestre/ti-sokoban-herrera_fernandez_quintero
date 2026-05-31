@@ -199,6 +199,30 @@ public class GrafoMatriz<T> implements IGrafo<T> {
         return resultado;
     }
 
+    public CustomLinkedList<T> reconstruirCaminoBFS(T origen, T destino) {
+        // Primero ejecuta BFS desde el origen
+        bfs(origen);
+
+        int j = obtenerIndice(destino);
+        if (j == -1) throw new IllegalArgumentException("El destino no existe");
+
+        CustomLinkedList<T> camino = new CustomLinkedList<>();
+        Vertice<T> actual = vertices.get(j);
+
+        // Si no tiene predecesor y no es el origen, no hay camino
+        if (actual.getPredecesor() == null && !actual.getContenido().equals(origen)) {
+            return camino;
+        }
+
+        // Reconstruye el camino desde destino hasta origen
+        while (actual != null) {
+            camino.add(actual.getContenido());
+            actual = actual.getPredecesor();
+        }
+
+        return camino;
+    }
+
 
     // FLOYD-WARSHALL
 
