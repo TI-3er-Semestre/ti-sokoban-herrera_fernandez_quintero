@@ -1,4 +1,4 @@
-package structure;
+package com.icesi.sokoban.structure;
 
 public class CustomLinkedList<T> {
     private Node<T> head;
