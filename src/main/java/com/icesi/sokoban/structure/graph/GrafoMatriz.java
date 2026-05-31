@@ -1,6 +1,7 @@
 package com.icesi.sokoban.structure.graph;
 
 import com.icesi.sokoban.structure.CustomLinkedList;
+import com.icesi.sokoban.structure.CustomQueue;
 
 public class GrafoMatriz<T> implements IGrafo<T> {
 
@@ -157,10 +158,73 @@ public class GrafoMatriz<T> implements IGrafo<T> {
     }
 
     @Override
-    public CustomLinkedList<T> bfs(T origen) { return null; }
+    public CustomLinkedList<T> bfs(T origen) {
+        int origenIdx = obtenerIndice(origen);
+        if (origenIdx == -1) return new CustomLinkedList<>();
+
+        // Inicializar todos los vértices
+        for (int i = 0; i < contador; i++) {
+            vertices.get(i).setColor(Vertice.Color.BLANCO);
+            vertices.get(i).setDistancia(INF);
+            vertices.get(i).setPredecesor(null);
+        }
+
+        // Configurar el origen
+        vertices.get(origenIdx).setColor(Vertice.Color.GRIS);
+        vertices.get(origenIdx).setDistancia(0);
+
+        // Usar la CustomQueue del proyecto
+        CustomQueue<Integer> cola = new CustomQueue<>();
+        cola.enqueue(origenIdx);
+
+        CustomLinkedList<T> resultado = new CustomLinkedList<>();
+
+        while (!cola.isEmpty()) {
+            int u = cola.dequeue();
+            resultado.add(vertices.get(u).getContenido());
+
+            // Revisar todos los vecinos
+            for (int v = 0; v < contador; v++) {
+                if (matrizAdyacencia[u][v] != INF && u != v) {
+                    if (vertices.get(v).getColor() == Vertice.Color.BLANCO) {
+                        vertices.get(v).setColor(Vertice.Color.GRIS);
+                        vertices.get(v).setDistancia(vertices.get(u).getDistancia() + 1);
+                        vertices.get(v).setPredecesor(vertices.get(u));
+                        cola.enqueue(v);
+                    }
+                }
+            }
+            vertices.get(u).setColor(Vertice.Color.NEGRO);
+        }
+        return resultado;
+    }
+
+    public CustomLinkedList<T> reconstruirCaminoBFS(T origen, T destino) {
+        // Primero ejecuta BFS desde el origen
+        bfs(origen);
+
+        int j = obtenerIndice(destino);
+        if (j == -1) throw new IllegalArgumentException("El destino no existe");
+
+        CustomLinkedList<T> camino = new CustomLinkedList<>();
+        Vertice<T> actual = vertices.get(j);
+
+        // Si no tiene predecesor y no es el origen, no hay camino
+        if (actual.getPredecesor() == null && !actual.getContenido().equals(origen)) {
+            return camino;
+        }
+
+        // Reconstruye el camino desde destino hasta origen
+        while (actual != null) {
+            camino.add(actual.getContenido());
+            actual = actual.getPredecesor();
+        }
+
+        return camino;
+    }
 
 
-    // FLOYD-WARSHALL  (Persona C)
+    // FLOYD-WARSHALL
 
 
     /**
@@ -274,9 +338,9 @@ public class GrafoMatriz<T> implements IGrafo<T> {
         return camino;
     }
 
-    // =========================================================================
-    // KRUSKAL  (Persona C)
-    // =========================================================================
+
+    // KRUSKAL
+
 
     /**
      * Algoritmo de Kruskal: encuentra el ARBOL GENERADOR MINIMO (AGM).
@@ -354,5 +418,9 @@ public class GrafoMatriz<T> implements IGrafo<T> {
             total += agm.get(i).getPeso();
         }
         return total;
+    }
+
+    public CustomLinkedList<Vertice<T>> getVertices() {
+        return vertices;
     }
 }
