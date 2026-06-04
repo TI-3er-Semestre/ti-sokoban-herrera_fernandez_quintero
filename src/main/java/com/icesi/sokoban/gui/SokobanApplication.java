@@ -6,7 +6,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
-import com.icesi.sokoban.controller.GameController;
+import com.icesi.sokoban.controller.MainMenuController;
 
 /**
  * MAIN — Punto de entrada de la aplicacion.
@@ -44,21 +44,17 @@ public class SokobanApplication extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception {
 
-        // 1. Cargar el FXML: crea nodos + instancia controlador + inyecta + initialize()
-        FXMLLoader loader = new FXMLLoader(
-                getClass().getResource("/com/icesi/sokoban/view/game.fxml"));
-        Parent root = loader.load();
+        // 1. Cargar el menú principal como primera pantalla
+        Parent root = FXMLLoader.load(
+                getClass().getResource("/com/icesi/sokoban/view/main-menu.fxml"));
 
-        // 2. Obtener el controlador creado por el FXMLLoader
-        GameController controller = loader.getController();
-
-        // 3. Construir la Scene
+        // 2. Construir la Scene con el menú
         Scene scene = new Scene(root);
 
-        // 4. Conectar el teclado (la Scene ya existe)
-        controller.attachKeyHandlers(scene);
-
-        // 5. Configurar y mostrar la ventana
+        // 3. Configurar y mostrar la ventana
+        // El menú no necesita teclado — los botones manejan la interacción.
+        // Cuando el usuario haga clic en "Jugar", MainMenuController cargará
+        // game.fxml y conectará el teclado en ese momento.
         primaryStage.setTitle("Sokoban — Tarea Integradora");
         primaryStage.setScene(scene);
         primaryStage.setResizable(false);
