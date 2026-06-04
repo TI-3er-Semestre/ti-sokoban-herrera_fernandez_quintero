@@ -10,14 +10,9 @@
 <!--
     VISTA — game.fxml
 
-    Responsabilidad MVC: SOLO estructura y disposicion visual.
-      - Declara los nodos de la interfaz en XML.
-      - Asigna fx:id para que el controlador inyecte los nodos con @FXML.
-      - Apunta al controlador con fx:controller.
-      - No contiene codigo Java ni logica del juego.
-
-    Nodos referenciados por el GameController (por fx:id):
+    Nodos referenciados por GameController (por fx:id):
       #statusLabel        barra superior, instrucciones / estado
+      #playerLabel        nombre del jugador activo
       #moveCounterLabel   contador de movimientos
       #pushCounterLabel   contador de empujes
       #gameCanvas         lienzo donde se dibuja el tablero
@@ -41,6 +36,9 @@
     <!-- Barra de contadores -->
     <HBox style="-fx-background-color: #1a1a2e; -fx-padding: 6 14 6 14;"
           spacing="24">
+        <Label fx:id="playerLabel"
+               text="👤 Invitado"
+               style="-fx-font-size: 13px; -fx-text-fill: #3da9fc;"/>
         <Label fx:id="moveCounterLabel"
                text="Movimientos: 0"
                style="-fx-font-size: 13px; -fx-text-fill: #f2cc8f;"/>
@@ -54,7 +52,7 @@
                 style="-fx-font-size: 12px;"/>
     </HBox>
 
-    <!-- Lienzo del juego. El GameController ajusta su tamano al cargar el nivel. -->
+    <!-- Lienzo del juego -->
     <Canvas fx:id="gameCanvas" width="420" height="300"/>
 
 </VBox>
