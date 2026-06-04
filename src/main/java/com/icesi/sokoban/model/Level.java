@@ -40,6 +40,7 @@ public class Level {
     private Board board;
     private Position playerStartPosition;
     private String difficulty;
+    private int timeLimit; // segundos, 0 = sin límite
 
     public Level(int levelId, String name) {
         this.levelId = levelId;
@@ -63,6 +64,7 @@ public class Level {
         this.levelId   = parseInt(extractValue(json, "id"));
         this.name      = extractString(json, "name");
         this.difficulty = extractString(json, "difficulty");
+        this.timeLimit = parseInt(extractValue(json, "timeLimit"));
 
         int rows = parseInt(extractValue(json, "rows"));
         int cols = parseInt(extractValue(json, "cols"));
@@ -271,4 +273,7 @@ public class Level {
 
     public String getDifficulty() { return difficulty; }
     public void setDifficulty(String difficulty) { this.difficulty = difficulty; }
+
+    public int getTimeLimit() { return timeLimit; }
+    public void setTimeLimit(int timeLimit) { this.timeLimit = timeLimit; }
 }
