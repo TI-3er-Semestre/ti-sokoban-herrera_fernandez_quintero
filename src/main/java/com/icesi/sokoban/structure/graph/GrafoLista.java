@@ -216,4 +216,56 @@ public class GrafoLista<T> implements IGrafo<T> {
         }
         return mst;
     }
+
+    @Override
+    public CustomLinkedList<Arista<T>> kruskal() {
+        CustomLinkedList<Arista<T>> agm = new CustomLinkedList<>();
+        if (contador == 0) return agm;
+
+        // 1. Recolectar todas las aristas (solo i < j)
+        int maxAristas = contador * (contador - 1) / 2;
+        @SuppressWarnings("unchecked")
+        Arista<T>[] aristas = new Arista[maxAristas];
+        int total = 0;
+
+        for (int i = 0; i < contador; i++) {
+            CustomLinkedList<int[]> vecinos = adyacencia.get(i);
+            for (int k = 0; k < vecinos.size(); k++) {
+                int j = vecinos.get(k)[0];
+                int peso = vecinos.get(k)[1];
+                if (i < j) {
+                    aristas[total++] = new Arista<>(
+                            vertices.get(i).getContenido(),
+                            vertices.get(j).getContenido(),
+                            peso);
+                }
+            }
+        }
+
+        // 2. Ordenar por peso (selection sort)
+        for (int i = 0; i < total - 1; i++) {
+            int idxMin = i;
+            for (int j = i + 1; j < total; j++) {
+                if (aristas[j].compareTo(aristas[idxMin]) < 0) idxMin = j;
+            }
+            if (idxMin != i) {
+                Arista<T> temp = aristas[i];
+                aristas[i] = aristas[idxMin];
+                aristas[idxMin] = temp;
+            }
+        }
+
+        // 3. Union-Find para evitar ciclos
+        UnionFind uf = new UnionFind(contador);
+        for (int k = 0; k < total; k++) {
+            Arista<T> a = aristas[k];
+            int iU = obtenerIndice(a.getOrigen());
+            int iV = obtenerIndice(a.getDestino());
+            if (uf.union(iU, iV)) {
+                agm.add(a);
+                if (agm.size() == contador - 1) break;
+            }
+        }
+        return agm;
+    }
 }
