@@ -10,20 +10,14 @@
 <!--
     VISTA — game.fxml
 
-    Responsabilidad MVC: SOLO estructura y disposicion visual.
-      - Declara los nodos de la interfaz en XML.
-      - Asigna fx:id para que el controlador inyecte los nodos con @FXML.
-      - Apunta al controlador con fx:controller.
-      - No contiene codigo Java ni logica del juego.
-
-    Nodos referenciados por el GameController (por fx:id):
-      #statusLabel        barra superior, instrucciones / estado
-      #moveCounterLabel   contador de movimientos
-      #pushCounterLabel   contador de empujes
-      #gameCanvas         lienzo donde se dibuja el tablero
-      #undoButton         boton de deshacer
+    Indicadores en tiempo real (barra de contadores):
+      #playerLabel        jugador activo
+      #moveCounterLabel   movimientos
+      #pushCounterLabel   empujes
+      #timerLabel         cronómetro en tiempo real (actualizado por Timeline)
+      #gameCanvas         lienzo del tablero
+      #undoButton         deshacer
 -->
-
 <VBox xmlns="http://javafx.com/javafx"
       xmlns:fx="http://javafx.com/fxml"
       fx:controller="com.icesi.sokoban.controller.GameController"
@@ -38,15 +32,21 @@
                style="-fx-font-size: 14px; -fx-font-weight: bold; -fx-text-fill: #fffffe;"/>
     </HBox>
 
-    <!-- Barra de contadores -->
+    <!-- Barra de indicadores en tiempo real -->
     <HBox style="-fx-background-color: #1a1a2e; -fx-padding: 6 14 6 14;"
-          spacing="24">
+          spacing="20" alignment="CENTER_LEFT">
+        <Label fx:id="playerLabel"
+               text="👤 Invitado"
+               style="-fx-font-size: 13px; -fx-text-fill: #3da9fc;"/>
         <Label fx:id="moveCounterLabel"
-               text="Movimientos: 0"
+               text="👣 Mov: 0"
                style="-fx-font-size: 13px; -fx-text-fill: #f2cc8f;"/>
         <Label fx:id="pushCounterLabel"
-               text="Empujes: 0"
+               text="📦 Emp: 0"
                style="-fx-font-size: 13px; -fx-text-fill: #e07a5f;"/>
+        <Label fx:id="timerLabel"
+               text="⏱ 0:00"
+               style="-fx-font-size: 13px; -fx-text-fill: #3da94f; -fx-font-weight: bold;"/>
         <Region HBox.hgrow="ALWAYS"/>
         <Button fx:id="undoButton"
                 text="Deshacer"
@@ -54,7 +54,7 @@
                 style="-fx-font-size: 12px;"/>
     </HBox>
 
-    <!-- Lienzo del juego. El GameController ajusta su tamano al cargar el nivel. -->
+    <!-- Lienzo del juego -->
     <Canvas fx:id="gameCanvas" width="420" height="300"/>
 
 </VBox>
