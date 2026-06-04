@@ -268,4 +268,13 @@ public class GrafoLista<T> implements IGrafo<T> {
         }
         return agm;
     }
+    @Override
+    public int costoAGM() {
+        CustomLinkedList<Arista<T>> agm = kruskal();
+        int total = 0;
+        for (int i = 0; i < agm.size(); i++) {
+            total += agm.get(i).getPeso();
+        }
+        return total;
+    }
 }

@@ -25,5 +25,7 @@ public interface IGrafo<T> {
     CustomLinkedList<int[]> prim();
 
     CustomLinkedList<Arista<T>> kruskal();
+
+    int costoAGM();
 }
 
