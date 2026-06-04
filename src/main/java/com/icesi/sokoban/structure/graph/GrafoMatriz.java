@@ -114,7 +114,9 @@ public class GrafoMatriz<T> implements IGrafo<T> {
     }
 
     @Override
-    public int cantidadVertices() { return contador; }
+    public int cantidadVertices() {
+        return contador;
+    }
 
     @Override
     public CustomLinkedList<T> dfs(T origen) {
@@ -344,20 +346,21 @@ public class GrafoMatriz<T> implements IGrafo<T> {
 
     /**
      * Algoritmo de Kruskal: encuentra el ARBOL GENERADOR MINIMO (AGM).
-     *
+     * <p>
      * Voraz (greedy):
-     *   1. Ordenar TODAS las aristas de menor a mayor peso.
-     *   2. Recorrerlas en orden. Si los extremos estan en conjuntos
-     *      distintos, agregar al AGM y unir los conjuntos. Si ya estan
-     *      en el mismo conjunto, descartar (formaria ciclo).
-     *   3. Terminar al tener n-1 aristas.
-     *
+     * 1. Ordenar TODAS las aristas de menor a mayor peso.
+     * 2. Recorrerlas en orden. Si los extremos estan en conjuntos
+     * distintos, agregar al AGM y unir los conjuntos. Si ya estan
+     * en el mismo conjunto, descartar (formaria ciclo).
+     * 3. Terminar al tener n-1 aristas.
+     * <p>
      * El grafo se trata como NO DIRIGIDO: solo se procesa i < j.
-     *
+     * <p>
      * Complejidad: O(E log E) dominado por el ordenamiento.
      *
      * @return lista de aristas del AGM
      */
+    @Override
     public CustomLinkedList<Arista<T>> kruskal() {
         CustomLinkedList<Arista<T>> agm = new CustomLinkedList<>();
         if (contador == 0) return agm;
@@ -410,7 +413,7 @@ public class GrafoMatriz<T> implements IGrafo<T> {
         return agm;
     }
 
-    /** Costo total del AGM: suma de los pesos de las aristas devueltas por kruskal(). */
+    @Override
     public int costoAGM() {
         CustomLinkedList<Arista<T>> agm = kruskal();
         int total = 0;

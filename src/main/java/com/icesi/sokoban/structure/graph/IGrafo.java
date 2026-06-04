@@ -23,4 +23,9 @@ public interface IGrafo<T> {
     int[][] floydWarshall();
 
     CustomLinkedList<int[]> prim();
+
+    CustomLinkedList<Arista<T>> kruskal();
+
+    int costoAGM();
 }
+
