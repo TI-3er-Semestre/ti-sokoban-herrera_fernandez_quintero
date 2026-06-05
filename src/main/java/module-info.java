@@ -9,6 +9,8 @@
 module com.icesi.sokoban {
     requires javafx.controls;
     requires javafx.fxml;
+    requires javafx.media;
+    requires java.desktop;
 
     // JavaFX necesita acceso por reflexion a los controladores y a la clase de arranque
     opens com.icesi.sokoban.gui        to javafx.fxml;
