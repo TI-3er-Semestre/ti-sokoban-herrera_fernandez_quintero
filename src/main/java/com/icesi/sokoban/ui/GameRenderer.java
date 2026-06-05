@@ -9,18 +9,9 @@ import com.icesi.sokoban.model.Position;
 
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.effect.ColorAdjust;
 import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
 
-/**
- * UI — GameRenderer
- *
- * Dibuja el estado del juego sobre el Canvas.
- * Cada nivel tiene su propio fondo (bg_level1.png, bg_level2.png, bg_level3.png).
- * El tablero se dibuja semitransparente encima del fondo.
- * El jugador usa sprites direccionales.
- */
 public class GameRenderer {
 
     public static final int TILE_SIZE = 60;
@@ -31,33 +22,32 @@ public class GameRenderer {
     private Image spriteDown, spriteUp, spriteLeft, spriteRight;
     private boolean spritesLoaded = false;
 
-    // Fondos por nivel
+    // Fondos por nivel — se cargan independientemente del jaguar
     private Image bgLevel1, bgLevel2, bgLevel3;
     private boolean bgsLoaded = false;
 
-    // Nivel actual para elegir fondo
-    private int currentLevel = 1;
+    // Tile de pared (jaguar)
+    private Image wallTile;
+    private boolean wallTileLoaded = false;
 
-    // Última dirección
+    private int currentLevel = 1;
     private Direction lastDirection = Direction.DOWN;
 
-    // Colores del tablero
-    private static final Color C_BG        = Color.web("#0f0e17");
-    private static final Color C_FLOOR     = Color.web("#2a2a3e", 0.75);
-    private static final Color C_WALL      = Color.web("#4a4e69", 0.90);
-    private static final Color C_GOAL      = Color.web("#c77dff", 0.85);
-    private static final Color C_BOX       = Color.web("#e07a5f");
-    private static final Color C_BOX_OG    = Color.web("#81b29a");
+    private static final Color C_BOX    = Color.web("#e07a5f");
+    private static final Color C_BOX_OG = Color.web("#81b29a");
+    private static final Color C_GOAL   = Color.web("#c77dff");
 
     public GameRenderer(Canvas canvas) {
         this.canvas = canvas;
         cargarSprites();
         cargarFondos();
+        cargarJaguar();
     }
 
     // ─────────────────────────────────────────────────────────────────────
-    // Carga de recursos
+    // Carga de recursos — cada uno en su propio try/catch
     // ─────────────────────────────────────────────────────────────────────
+
     private void cargarSprites() {
         try {
             String base = "/com/icesi/sokoban/sprites/";
@@ -74,18 +64,40 @@ public class GameRenderer {
     private void cargarFondos() {
         try {
             String base = "/com/icesi/sokoban/sprites/";
-            bgLevel1 = new Image(getClass().getResourceAsStream(base + "bg_level1.png"));
-            bgLevel2 = new Image(getClass().getResourceAsStream(base + "bg_level2.png"));
-            bgLevel3 = new Image(getClass().getResourceAsStream(base + "bg_level3.png"));
+            Image b1 = new Image(getClass().getResourceAsStream(base + "bg_level1.png"));
+            Image b2 = new Image(getClass().getResourceAsStream(base + "bg_level2.png"));
+            Image b3 = new Image(getClass().getResourceAsStream(base + "bg_level3.png"));
+            // Verificar que se cargaron correctamente
+            if (b1.isError() || b2.isError() || b3.isError()) {
+                bgsLoaded = false;
+                return;
+            }
+            bgLevel1 = b1;
+            bgLevel2 = b2;
+            bgLevel3 = b3;
             bgsLoaded = true;
         } catch (Exception e) {
             bgsLoaded = false;
         }
     }
 
+    private void cargarJaguar() {
+        try {
+            String base = "/com/icesi/sokoban/sprites/";
+            Image w = new Image(getClass().getResourceAsStream(base + "block_00.jpg"));
+            if (!w.isError()) {
+                wallTile = w;
+                wallTileLoaded = true;
+            }
+        } catch (Exception e) {
+            wallTileLoaded = false;
+        }
+    }
+
     // ─────────────────────────────────────────────────────────────────────
     // API pública
     // ─────────────────────────────────────────────────────────────────────
+
     public void setLastDirection(Direction direction) {
         if (direction != null) this.lastDirection = direction;
     }
@@ -102,12 +114,13 @@ public class GameRenderer {
     // ─────────────────────────────────────────────────────────────────────
     // Render principal
     // ─────────────────────────────────────────────────────────────────────
+
     public void render(Game game) {
         GraphicsContext gc = canvas.getGraphicsContext2D();
         Board board = game.getBoard();
 
         if (board == null) {
-            gc.setFill(C_BG);
+            gc.setFill(Color.web("#0f0e17"));
             gc.fillRect(0, 0, canvas.getWidth(), canvas.getHeight());
             return;
         }
@@ -115,14 +128,14 @@ public class GameRenderer {
         // 1. Fondo del nivel
         dibujarFondo(gc);
 
-        // 2. Tablero semitransparente
+        // 2. Tablero
         for (int row = 0; row < board.getHeight(); row++) {
             for (int col = 0; col < board.getWidth(); col++) {
                 double x = col * TILE_SIZE;
                 double y = row * TILE_SIZE;
                 if (board.isWall(row, col))      drawWall(gc, x, y);
                 else if (board.isGoal(row, col)) drawGoal(gc, x, y);
-                else                             drawFloor(gc, x, y);
+                // piso = transparente, se ve el fondo
             }
         }
 
@@ -142,58 +155,38 @@ public class GameRenderer {
     }
 
     // ─────────────────────────────────────────────────────────────────────
-    // Fondo del nivel
+    // Fondo
     // ─────────────────────────────────────────────────────────────────────
+
     private void dibujarFondo(GraphicsContext gc) {
         double w = canvas.getWidth();
         double h = canvas.getHeight();
 
         if (bgsLoaded) {
-            Image bg = getFondoParaNivel(currentLevel);
-            if (bg != null) {
-                gc.drawImage(bg, 0, 0, w, h);
-                return;
-            }
-        }
-
-        // Fallback — color sólido por nivel
-        switch (currentLevel) {
-            case 1: gc.setFill(Color.web("#1a2e1a")); break;
-            case 2: gc.setFill(Color.web("#1a1a2e")); break;
-            case 3: gc.setFill(Color.web("#2e1a1a")); break;
-            default: gc.setFill(C_BG);
-        }
-        gc.fillRect(0, 0, w, h);
-    }
-
-    private Image getFondoParaNivel(int level) {
-        switch (level) {
-            case 1: return bgLevel1;
-            case 2: return bgLevel2;
-            case 3: return bgLevel3;
-            default: return bgLevel1;
+            Image bg = currentLevel == 2 ? bgLevel2
+                    : currentLevel == 3 ? bgLevel3
+                      : bgLevel1;
+            gc.drawImage(bg, 0, 0, w, h);
+        } else {
+            gc.setFill(Color.web("#0f0e17"));
+            gc.fillRect(0, 0, w, h);
         }
     }
 
     // ─────────────────────────────────────────────────────────────────────
     // Primitivas
     // ─────────────────────────────────────────────────────────────────────
-    private void drawFloor(GraphicsContext gc, double x, double y) {
-        gc.setFill(C_FLOOR);
-        gc.fillRect(x, y, TILE_SIZE, TILE_SIZE);
-    }
 
     private void drawWall(GraphicsContext gc, double x, double y) {
-        gc.setFill(C_WALL);
-        gc.fillRoundRect(x + 1, y + 1, TILE_SIZE - 2, TILE_SIZE - 2, 8, 8);
-        // Borde más oscuro para dar relieve
-        gc.setStroke(Color.web("#2a2d3e", 0.8));
-        gc.setLineWidth(1.5);
-        gc.strokeRoundRect(x + 1, y + 1, TILE_SIZE - 2, TILE_SIZE - 2, 8, 8);
+        if (wallTileLoaded) {
+            gc.drawImage(wallTile, x, y, TILE_SIZE, TILE_SIZE);
+        } else {
+            gc.setFill(Color.web("#4a4e69"));
+            gc.fillRoundRect(x + 1, y + 1, TILE_SIZE - 2, TILE_SIZE - 2, 8, 8);
+        }
     }
 
     private void drawGoal(GraphicsContext gc, double x, double y) {
-        drawFloor(gc, x, y);
         double cx = x + TILE_SIZE / 2.0;
         double cy = y + TILE_SIZE / 2.0;
         double r  = TILE_SIZE * 0.28;
@@ -215,26 +208,17 @@ public class GameRenderer {
 
     private void drawPlayer(GraphicsContext gc, double x, double y) {
         if (spritesLoaded) {
-            Image sprite = getSpriteForDirection(lastDirection);
-            double margin = 2;
-            gc.drawImage(sprite, x + margin, y + margin,
-                    TILE_SIZE - margin * 2, TILE_SIZE - margin * 2);
+            Image sprite;
+            switch (lastDirection) {
+                case UP:    sprite = spriteUp;    break;
+                case LEFT:  sprite = spriteLeft;  break;
+                case RIGHT: sprite = spriteRight; break;
+                default:    sprite = spriteDown;  break;
+            }
+            gc.drawImage(sprite, x + 2, y + 2, TILE_SIZE - 4, TILE_SIZE - 4);
         } else {
-            double cx = x + TILE_SIZE / 2.0;
-            double headR = TILE_SIZE * 0.18;
             gc.setFill(Color.web("#f2cc8f"));
-            gc.fillRoundRect(x + 16, y + 26, TILE_SIZE - 32, TILE_SIZE - 32, 6, 6);
-            gc.fillOval(cx - headR, y + 10, headR * 2, headR * 2);
-        }
-    }
-
-    private Image getSpriteForDirection(Direction dir) {
-        switch (dir) {
-            case UP:    return spriteUp;
-            case DOWN:  return spriteDown;
-            case LEFT:  return spriteLeft;
-            case RIGHT: return spriteRight;
-            default:    return spriteDown;
+            gc.fillOval(x + 15, y + 10, 30, 30);
         }
     }
 }
