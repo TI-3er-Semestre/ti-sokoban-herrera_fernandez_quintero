@@ -7,6 +7,7 @@ import com.icesi.sokoban.model.Level;
 import com.icesi.sokoban.model.Player;
 import com.icesi.sokoban.model.Stats;
 import com.icesi.sokoban.ui.GameRenderer;
+import com.icesi.sokoban.structure.CustomLinkedList;
 
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
@@ -20,6 +21,11 @@ import javafx.scene.control.Label;
 import javafx.scene.input.KeyEvent;
 import javafx.stage.Stage;
 import javafx.util.Duration;
+import javafx.application.Platform;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
+import javafx.scene.control.ChoiceBox;
+import javafx.scene.layout.HBox;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -37,15 +43,21 @@ public class GameController implements Initializable {
     @FXML private Label  timerLabel;
     @FXML private Label  statusLabel;
     @FXML private Button undoButton;
+    @FXML private HBox solverBox;
+    @FXML private ChoiceBox<SokobanSolver.Algoritmo> algorithmChoice;
+    @FXML private Button solveButton;
 
     private final Game game = new Game();
     private GameRenderer renderer;
     private boolean gameEnded = false;
     private int levelNumber = 1;
     private Level currentLevel;
+    private boolean animating = false;
 
     private Timeline cronometro;
     private int segundos = 0;
+
+    private static Game activeGame;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -55,6 +67,11 @@ public class GameController implements Initializable {
         playerLabel.setText(activePlayer != null
                 ? "👤 " + activePlayer.getUsername() : "👤 Invitado");
 
+        // Aplicar la skin del avatar elegido en la pantalla de selección
+        if (activePlayer != null && activePlayer.getAvatar() != null) {
+            renderer.setSkin(activePlayer.getAvatar());
+        }
+
         currentLevel = cargarNivelDesdeJson(levelNumber);
         game.loadLevel(currentLevel);
 
@@ -63,6 +80,10 @@ public class GameController implements Initializable {
         renderer.render(game);
         updateLabels();
         iniciarCronometro();
+        activeGame = game;
+        algorithmChoice.getItems().addAll(SokobanSolver.Algoritmo.BFS, SokobanSolver.Algoritmo.DFS);
+        algorithmChoice.setValue(SokobanSolver.Algoritmo.BFS);
+        actualizarControlesSolver();
     }
 
     // ─────────────────────────────────────────────────────────────────────
@@ -108,6 +129,7 @@ public class GameController implements Initializable {
             renderer.render(game);
             updateLabels();
         }
+        actualizarControlesSolver();
     }
 
     public void attachKeyHandlers(Scene scene) {
@@ -118,7 +140,7 @@ public class GameController implements Initializable {
     // Teclado — actualiza sprite según dirección
     // ─────────────────────────────────────────────────────────────────────
     private void handleKey(KeyEvent event) {
-        if (gameEnded) return;
+        if (gameEnded || animating) return;
 
         Direction dir = null;
         switch (event.getCode()) {
@@ -159,11 +181,94 @@ public class GameController implements Initializable {
         event.consume();
     }
 
+    private void actualizarControlesSolver() {
+        boolean esNivel3 = (levelNumber == 3);   // el auto-solver es para el escenario experto
+        solverBox.setVisible(esNivel3);
+        solverBox.setManaged(esNivel3);
+    }
+
+    @FXML
+    private void onSolveClicked() {
+        if (animating || gameEnded) return;
+
+        // Volver al estado inicial para aplicar la solucion desde el principio.
+        game.resetLevel();
+        detenerCronometro();
+        iniciarCronometro();
+        renderer.render(game);
+        updateLabels();
+
+        animating = true;
+        solveButton.setDisable(true);
+        statusLabel.setText("Calculando solucion...");
+
+        final SokobanSolver.Algoritmo algoritmo = algorithmChoice.getValue();
+
+        // CONCURRENCIA: la busqueda corre en un hilo aparte (clase anonima, forma larga).
+        Thread worker = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                SokobanSolver solver = new SokobanSolver(game);
+                final CustomLinkedList<Direction> solucion = solver.resolver(algoritmo);
+                // La interfaz solo se toca desde el hilo de JavaFX:
+                Platform.runLater(new Runnable() {
+                    @Override
+                    public void run() {
+                        startAnimation(solucion);
+                    }
+                });
+            }
+        });
+        worker.setDaemon(true);
+        worker.start();
+    }
+
     @FXML
     private void onUndoClicked() {
         if (game.undo()) {
             renderer.render(game);
             updateLabels();
+        }
+    }
+
+    private void startAnimation(CustomLinkedList<Direction> solucion) {
+        if (solucion == null || solucion.isEmpty()) {
+            statusLabel.setText("No se encontro solucion para este nivel.");
+            finishAnimation();
+            return;
+        }
+        statusLabel.setText("Resolviendo automaticamente (" + algorithmChoice.getValue() + ")...");
+
+        Timeline animacion = new Timeline();
+        for (int i = 0; i < solucion.size(); i++) {
+            final Direction dir = solucion.get(i);   // un movimiento por KeyFrame
+            KeyFrame paso = new KeyFrame(
+                    Duration.millis(300L * (i + 1)),
+                    new EventHandler<ActionEvent>() {
+                        @Override
+                        public void handle(ActionEvent event) {
+                            renderer.setLastDirection(dir);
+                            game.move(dir);
+                            renderer.render(game);
+                            updateLabels();
+                        }
+                    });
+            animacion.getKeyFrames().add(paso);
+        }
+        animacion.setOnFinished(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                finishAnimation();
+            }
+        });
+        animacion.play();
+    }
+
+    private void finishAnimation() {
+        animating = false;
+        solveButton.setDisable(false);
+        if (game.getState() == GameStatus.WON) {
+            statusLabel.setText("Resuelto automaticamente.");
         }
     }
 
@@ -275,5 +380,9 @@ public class GameController implements Initializable {
         level.setPlayerStartPosition(new com.icesi.sokoban.model.Position(2, 1));
         level.setDifficulty("BASIC");
         return level;
+    }
+
+    public static Game getActiveGame(){
+        return activeGame;
     }
 }

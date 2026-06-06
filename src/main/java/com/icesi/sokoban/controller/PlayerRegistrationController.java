@@ -1,7 +1,6 @@
 package com.icesi.sokoban.controller;
 
 import com.icesi.sokoban.model.ExperienceLevel;
-import com.icesi.sokoban.model.Player;
 
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -14,156 +13,85 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 
-import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 
 /**
- * CONTROLLER — PlayerRegistrationController  (RF1: Registrar jugador)
+ * CONTROLLER — PlayerRegistrationController  (RF1: Registrar jugador — paso 1)
  *
  * Responsabilidades:
- *   - Recoger los datos del formulario (nombre, email, username, nivel, avatar).
- *   - Llamar a PlayerRegistry.registerPlayer() con esos datos.
- *   - Mostrar el mensaje de éxito o error en statusLabel.
- *   - Si el registro es exitoso, guardar el jugador activo en PlayerRegistry
- *     para que GameController sepa quién está jugando.
+ *   - Recoger los datos del formulario (nombre, email, username, nivel).
+ *   - Validar los campos antes de continuar.
+ *   - Navegar a AvatarSelectController pasándole los datos mediante setDatosRegistro().
  *
- * PlayerRegistry es estático — se comparte entre todas las pantallas.
- * Así GameController puede preguntar quién está registrado sin que
- * esta pantalla le pase nada explícitamente.
+ * El registro definitivo en PlayerRegistry ocurre en AvatarSelectController,
+ * una vez que el jugador elige su avatar.
  */
 public class PlayerRegistrationController implements Initializable {
 
     // ── Nodos inyectados desde player-registration.fxml ──────────────────
-    @FXML private TextField nameField;
-    @FXML private TextField emailField;
-    @FXML private TextField usernameField;
+    @FXML private TextField      nameField;
+    @FXML private TextField      emailField;
+    @FXML private TextField      usernameField;
     @FXML private ChoiceBox<String> levelChoice;
-    @FXML private Button avatarWizard;
-    @FXML private Button avatarRobot;
-    @FXML private Button avatarFox;
-    @FXML private Label statusLabel;
-    @FXML private Button volverButton;
-
-    // ── Estado interno ────────────────────────────────────────────────────
-    // Avatar seleccionado — empieza vacío, el usuario debe elegir uno.
-    private String selectedAvatar = "";
-
-    // ── Colores para feedback visual del avatar seleccionado ──────────────
-    private static final String STYLE_AVATAR_NORMAL =
-            "-fx-background-color: #2a2a4a; -fx-text-fill: #fffffe; " +
-                    "-fx-border-color: #555577; -fx-border-radius: 4; " +
-                    "-fx-background-radius: 4; -fx-padding: 8 16 8 16; -fx-cursor: hand;";
-    private static final String STYLE_AVATAR_SELECTED =
-            "-fx-background-color: #ff8906; -fx-text-fill: #0f0e17; " +
-                    "-fx-border-color: #ff8906; -fx-border-radius: 4; " +
-                    "-fx-background-radius: 4; -fx-padding: 8 16 8 16; -fx-cursor: hand;";
+    @FXML private Label          statusLabel;
+    @FXML private Button         siguienteButton;
 
     // ─────────────────────────────────────────────────────────────────────
-    // initialize() — se ejecuta después de inyectar los @FXML
+    // initialize() — poblamos el ChoiceBox
     // ─────────────────────────────────────────────────────────────────────
-
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        // Poblar el ChoiceBox con los valores del enum ExperienceLevel
         levelChoice.getItems().addAll("BEGINNER", "ADVANCED", "EXPERT");
-        levelChoice.setValue("BEGINNER"); // valor por defecto
+        levelChoice.setValue("BEGINNER");
     }
 
     // ─────────────────────────────────────────────────────────────────────
-    // Selección de avatar — resalta el botón elegido
+    // onSiguienteClicked() — valida y navega a la selección de avatar
     // ─────────────────────────────────────────────────────────────────────
-
     @FXML
-    private void onAvatarWizard() {
-        selectedAvatar = "🧙";
-        avatarWizard.setStyle(STYLE_AVATAR_SELECTED);
-        avatarRobot.setStyle(STYLE_AVATAR_NORMAL);
-        avatarFox.setStyle(STYLE_AVATAR_NORMAL);
-    }
-
-    @FXML
-    private void onAvatarRobot() {
-        selectedAvatar = "🤖";
-        avatarWizard.setStyle(STYLE_AVATAR_NORMAL);
-        avatarRobot.setStyle(STYLE_AVATAR_SELECTED);
-        avatarFox.setStyle(STYLE_AVATAR_NORMAL);
-    }
-
-    @FXML
-    private void onAvatarFox() {
-        selectedAvatar = "🦊";
-        avatarWizard.setStyle(STYLE_AVATAR_NORMAL);
-        avatarRobot.setStyle(STYLE_AVATAR_NORMAL);
-        avatarFox.setStyle(STYLE_AVATAR_SELECTED);
-    }
-
-    // ─────────────────────────────────────────────────────────────────────
-    // Registro — recoge los campos y llama a PlayerRegistry
-    // ─────────────────────────────────────────────────────────────────────
-
-    @FXML
-    private void onRegistrarClicked() {
+    private void onSiguienteClicked() {
         String name     = nameField.getText().trim();
         String email    = emailField.getText().trim();
         String username = usernameField.getText().trim();
         String level    = levelChoice.getValue();
 
-        // Validar que eligió un avatar
-        if (selectedAvatar.isEmpty()) {
-            mostrarError("Por favor elige un avatar.");
+        // Validaciones básicas — el registro completo lo hace AvatarSelectController
+        if (name.isEmpty()) {
+            mostrarError("El nombre no puede estar vacío.");
+            return;
+        }
+        if (!email.contains("@") || !email.contains(".")) {
+            mostrarError("Formato de correo inválido.");
+            return;
+        }
+        if (username.isEmpty()) {
+            mostrarError("El username no puede estar vacío.");
             return;
         }
 
-        // Convertir el String del ChoiceBox al enum
-        ExperienceLevel expLevel = ExperienceLevel.valueOf(level);
+        try {
+            FXMLLoader loader = new FXMLLoader(
+                    getClass().getResource("/com/icesi/sokoban/view/Avatar_select.fxml"));
+            Parent root = loader.load();
 
-        // Llamar al registro — PlayerRegistry valida y retorna un mensaje
-        String resultado = PlayerRegistry.getInstance()
-                .registerPlayer(name, email, username, selectedAvatar, expLevel);
+            AvatarSelectController ac = loader.getController();
+            ac.setDatosRegistro(name, email, username, level);
 
-        if (resultado.startsWith("ÉXITO")) {
-            mostrarExito(resultado);
-            limpiarFormulario();
-        } else {
-            mostrarError(resultado);
+            Stage stage = (Stage) siguienteButton.getScene().getWindow();
+            stage.setScene(new Scene(root));
+            stage.sizeToScene();
+        } catch (Exception e) {
+            e.printStackTrace();
+            mostrarError("Error al cargar la pantalla de avatar.");
         }
-    }
-
-    // ─────────────────────────────────────────────────────────────────────
-    // Navegación — volver al menú principal
-    // ─────────────────────────────────────────────────────────────────────
-
-    @FXML
-    private void onVolverClicked() throws IOException {
-        Parent root = FXMLLoader.load(
-                getClass().getResource("/com/icesi/sokoban/view/main-menu.fxml"));
-        Stage stage = (Stage) volverButton.getScene().getWindow();
-        stage.setScene(new Scene(root));
     }
 
     // ─────────────────────────────────────────────────────────────────────
     // Utilidades de la vista
     // ─────────────────────────────────────────────────────────────────────
-
-    private void mostrarExito(String mensaje) {
-        statusLabel.setStyle("-fx-text-fill: #00c896; -fx-font-size: 13px; -fx-font-weight: bold;");
-        statusLabel.setText(mensaje);
-    }
-
-    private void mostrarError(String mensaje) {
-        statusLabel.setStyle("-fx-text-fill: #ef4565; -fx-font-size: 13px; -fx-font-weight: bold;");
-        statusLabel.setText(mensaje);
-    }
-
-    private void limpiarFormulario() {
-        nameField.clear();
-        emailField.clear();
-        usernameField.clear();
-        levelChoice.setValue("BEGINNER");
-        selectedAvatar = "";
-        avatarWizard.setStyle(STYLE_AVATAR_NORMAL);
-        avatarRobot.setStyle(STYLE_AVATAR_NORMAL);
-        avatarFox.setStyle(STYLE_AVATAR_NORMAL);
+    private void mostrarError(String msg) {
+        statusLabel.setStyle("-fx-text-fill: #ef4565; -fx-font-size: 12px; -fx-font-weight: bold;");
+        statusLabel.setText(msg);
     }
 }
