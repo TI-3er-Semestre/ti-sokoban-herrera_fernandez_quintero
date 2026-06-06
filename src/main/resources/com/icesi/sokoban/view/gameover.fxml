@@ -2,75 +2,48 @@
 
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.image.Image?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.Button?>
 
-<!--
-    VISTA — gameover.fxml
+<StackPane xmlns="http://javafx.com/javafx"
+           xmlns:fx="http://javafx.com/fxml"
+           fx:controller="com.icesi.sokoban.controller.GameOverController">
 
-    Se muestra cuando:
-      - Se agota el tiempo límite del nivel
-      - Una caja queda bloqueada sin salida (deadlock)
+    <!-- Fondo semitransparente -->
+    <ImageView fitWidth="900" fitHeight="700" preserveRatio="false" opacity="0.25">
+        <image><Image url="@../sprites/Level/bg_level1.jpg"/></image>
+    </ImageView>
 
-    GameOverController recibe el motivo via setMotivo() antes de navegar.
--->
-<VBox xmlns="http://javafx.com/javafx"
-      xmlns:fx="http://javafx.com/fxml"
-      fx:controller="com.icesi.sokoban.controller.GameOverController"
-      alignment="CENTER"
-      spacing="24"
-      style="-fx-background-color: #0f0e17; -fx-padding: 60;">
+    <VBox alignment="CENTER" spacing="24"
+          style="-fx-background-color: rgba(15,14,23,0.75); -fx-padding: 60;">
 
-    <!-- Título -->
-    <Label text="💀 Game Over"
-           style="-fx-text-fill: #ef4565;
-                  -fx-font-size: 48px;
-                  -fx-font-weight: bold;"/>
+        <Label text="💀 Game Over"
+               style="-fx-text-fill: #ef4565; -fx-font-size: 48px; -fx-font-weight: bold;"/>
 
-    <!-- Motivo del game over -->
-    <Label fx:id="motivoLabel"
-           text=""
-           wrapText="true"
-           style="-fx-text-fill: #a7a9be;
-                  -fx-font-size: 18px;
-                  -fx-alignment: CENTER;"/>
+        <Label fx:id="motivoLabel" text="" wrapText="true"
+               style="-fx-text-fill: #a7a9be; -fx-font-size: 18px; -fx-alignment: CENTER;"/>
 
-    <!-- Nivel y jugador -->
-    <VBox spacing="8" alignment="CENTER"
-          style="-fx-background-color: #16213e;
-                 -fx-padding: 20;
-                 -fx-background-radius: 10;">
-        <Label fx:id="nivelLabel"
-               text=""
-               style="-fx-text-fill: #fffffe; -fx-font-size: 15px;"/>
-        <Label fx:id="jugadorLabel"
-               text=""
-               style="-fx-text-fill: #3da9fc; -fx-font-size: 14px;"/>
+        <VBox spacing="8" alignment="CENTER"
+              style="-fx-background-color: #16213e; -fx-padding: 20; -fx-background-radius: 10;">
+            <Label fx:id="nivelLabel" text=""
+                   style="-fx-text-fill: #fffffe; -fx-font-size: 15px;"/>
+            <Label fx:id="jugadorLabel" text=""
+                   style="-fx-text-fill: #3da9fc; -fx-font-size: 14px;"/>
+        </VBox>
+
+        <HBox spacing="16" alignment="CENTER">
+            <Button fx:id="reintentarButton" text="🔄 Reintentar" onAction="#onReintentarClicked"
+                    style="-fx-background-color: #ff8906; -fx-text-fill: #0f0e17;
+                           -fx-font-size: 15px; -fx-font-weight: bold;
+                           -fx-background-radius: 6; -fx-cursor: hand; -fx-padding: 10 24 10 24;"/>
+            <Button fx:id="menuButton" text="← Menú Principal" onAction="#onMenuClicked"
+                    style="-fx-background-color: #2a2a4a; -fx-text-fill: #fffffe;
+                           -fx-font-size: 15px; -fx-background-radius: 6;
+                           -fx-border-color: #555577; -fx-border-radius: 6;
+                           -fx-cursor: hand; -fx-padding: 10 24 10 24;"/>
+        </HBox>
     </VBox>
-
-    <!-- Botones -->
-    <HBox spacing="16" alignment="CENTER">
-        <Button fx:id="reintentarButton"
-                text="🔄 Reintentar"
-                onAction="#onReintentarClicked"
-                style="-fx-background-color: #ff8906;
-                       -fx-text-fill: #0f0e17;
-                       -fx-font-size: 15px;
-                       -fx-font-weight: bold;
-                       -fx-background-radius: 6;
-                       -fx-cursor: hand;
-                       -fx-padding: 10 24 10 24;"/>
-        <Button fx:id="menuButton"
-                text="← Menú Principal"
-                onAction="#onMenuClicked"
-                style="-fx-background-color: #2a2a4a;
-                       -fx-text-fill: #fffffe;
-                       -fx-font-size: 15px;
-                       -fx-background-radius: 6;
-                       -fx-border-color: #555577;
-                       -fx-border-radius: 6;
-                       -fx-cursor: hand;
-                       -fx-padding: 10 24 10 24;"/>
-    </HBox>
-
-</VBox>
+</StackPane>

@@ -42,6 +42,7 @@ public class Level implements Serializable{
     private Position playerStartPosition;
     private String difficulty;
     private int timeLimit; // segundos, 0 = sin límite
+    private String wallTile; // nombre del archivo de tile de muro
 
     public Level(int levelId, String name) {
         this.levelId = levelId;
@@ -66,6 +67,7 @@ public class Level implements Serializable{
         this.name      = extractString(json, "name");
         this.difficulty = extractString(json, "difficulty");
         this.timeLimit = parseInt(extractValue(json, "timeLimit"));
+        this.wallTile  = extractString(json, "wallTile");
 
         int rows = parseInt(extractValue(json, "rows"));
         int cols = parseInt(extractValue(json, "cols"));
@@ -110,7 +112,7 @@ public class Level implements Serializable{
                         if (!board.isGoal(r,c)){
                             board.addGoal(new Position(r,c));
                         }
-                    break;
+                        break;
                     case 6:  // PLAYER_ON_TARGET
                         cell = '.';
                         this.playerStartPosition = new Position(r,c);
@@ -283,4 +285,7 @@ public class Level implements Serializable{
 
     public int getTimeLimit() { return timeLimit; }
     public void setTimeLimit(int timeLimit) { this.timeLimit = timeLimit; }
+
+    public String getWallTile() { return wallTile; }
+    public void setWallTile(String wallTile) { this.wallTile = wallTile; }
 }
