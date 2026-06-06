@@ -26,13 +26,13 @@
     <MediaView fx:id="mediaView"
                fitWidth="840"
                fitHeight="560"
-               preserveRatio="true"/>
+               preserveRatio="false"/>
 
     <!-- Imagen "Press Any Key" — oculta hasta que el video termina -->
     <ImageView fx:id="pressAnyKeyImage"
                fitWidth="840"
                fitHeight="560"
-               preserveRatio="true"
+               preserveRatio="false"
                visible="false"/>
 
 </StackPane>
