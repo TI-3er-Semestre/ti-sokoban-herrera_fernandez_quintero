@@ -5,13 +5,6 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.Button?>
 
-<!--
-    VISTA — victory.fxml  (Pantalla de victoria)
-
-    Se muestra cuando el jugador completa un nivel.
-    VictoryController recibe los Stats via setStats() antes de cargar
-    la escena, y los muestra en los labels de esta vista.
--->
 <VBox xmlns="http://javafx.com/javafx"
       xmlns:fx="http://javafx.com/fxml"
       fx:controller="com.icesi.sokoban.controller.VictoryController"
@@ -19,7 +12,6 @@
       spacing="20"
       style="-fx-background-color: #0f0e17; -fx-padding: 60;">
 
-    <!-- Título -->
     <Label text="🎉 ¡Nivel Completado!"
            style="-fx-text-fill: #ff8906;
                   -fx-font-size: 40px;
@@ -27,10 +19,9 @@
 
     <Label fx:id="playerNameLabel"
            text=""
-           style="-fx-text-fill: #fffffe;
-                  -fx-font-size: 18px;"/>
+           style="-fx-text-fill: #fffffe; -fx-font-size: 18px;"/>
 
-    <!-- Estadísticas de la partida -->
+    <!-- Estadísticas -->
     <VBox spacing="10" alignment="CENTER"
           style="-fx-background-color: #16213e;
                  -fx-padding: 24;
@@ -62,6 +53,20 @@
                       -fx-font-size: 22px;
                       -fx-font-weight: bold;"/>
     </VBox>
+
+    <!-- Botón siguiente nivel — visible solo si hay siguiente -->
+    <Button fx:id="siguienteButton"
+            text="Siguiente Nivel →"
+            onAction="#onSiguienteNivelClicked"
+            visible="false"
+            managed="false"
+            style="-fx-background-color: #3da94f;
+                   -fx-text-fill: #0f0e17;
+                   -fx-font-size: 16px;
+                   -fx-font-weight: bold;
+                   -fx-background-radius: 6;
+                   -fx-cursor: hand;
+                   -fx-padding: 12 32 12 32;"/>
 
     <!-- Botones de navegación -->
     <HBox spacing="16" alignment="CENTER">

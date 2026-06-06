@@ -95,7 +95,7 @@ public class SokobanSolverTest {
         Game game = construirNivelResoluble();
         SokobanSolver solver = new SokobanSolver(game);
 
-        CustomLinkedList<Direction> solucion = solver.resolver();
+        CustomLinkedList<Direction> solucion = solver.resolver(algoritmo);
 
         // Debe encontrar al menos un movimiento.
         assertFalse(solucion.isEmpty());
@@ -106,7 +106,7 @@ public class SokobanSolverTest {
         Game game = construirNivelSinSolucion();
         SokobanSolver solver = new SokobanSolver(game);
 
-        CustomLinkedList<Direction> solucion = solver.resolver();
+        CustomLinkedList<Direction> solucion = solver.resolver(algoritmo);
 
         // Una caja atrapada en esquina hace el nivel irresoluble.
         assertTrue(solucion.isEmpty());
@@ -117,7 +117,7 @@ public class SokobanSolverTest {
         Game game = construirNivelResoluble();
         SokobanSolver solver = new SokobanSolver(game);
 
-        CustomLinkedList<Direction> solucion = solver.resolver();
+        CustomLinkedList<Direction> solucion = solver.resolver(algoritmo);
 
         // Aplicar la solucion movimiento por movimiento sobre el juego.
         for (int i = 0; i < solucion.size(); i++) {
@@ -150,7 +150,7 @@ public class SokobanSolverTest {
         game.loadLevel(level);
 
         SokobanSolver solver = new SokobanSolver(game);
-        CustomLinkedList<Direction> solucion = solver.resolver();
+        CustomLinkedList<Direction> solucion = solver.resolver(algoritmo);
 
         // No hace falta ningun movimiento: la solucion es vacia.
         assertTrue(solucion.isEmpty());

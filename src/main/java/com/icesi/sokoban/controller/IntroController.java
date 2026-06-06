@@ -47,7 +47,7 @@ public class IntroController implements Initializable {
     private void cargarImagen() {
         try {
             URL imgUrl = getClass().getResource(
-                    "/com/icesi/sokoban/sprites/press_any_key.png");
+                    "/com/icesi/sokoban/sprites/pages/press_any_key.png");
             if (imgUrl != null) {
                 pressAnyKeyImage.setImage(new Image(imgUrl.toExternalForm()));
             }
@@ -60,14 +60,14 @@ public class IntroController implements Initializable {
         try {
             // Intentar cargar desde el classpath primero
             URL videoUrl = getClass().getResource(
-                    "/com/icesi/sokoban/sprites/intro_video.mp4");
+                    "/com/icesi/sokoban/sprites/Video/intro_video.mp4");
 
             String mediaUri;
             if (videoUrl != null) {
                 mediaUri = videoUrl.toExternalForm();
             } else {
                 // Fallback: buscar junto al jar ejecutable
-                java.io.File videoFile = new java.io.File("src/main/resources/com/icesi/sokoban/sprites/intro_video.mp4");
+                java.io.File videoFile = new java.io.File("src/main/resources/com/icesi/sokoban/sprites/Video/intro_video.mp4");
                 if (!videoFile.exists()) {
                     mostrarPressAnyKey();
                     return;
