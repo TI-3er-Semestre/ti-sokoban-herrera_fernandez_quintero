@@ -1,21 +1,162 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.scene.layout.VBox?>
+<?import javafx.scene.layout.HBox?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.ChoiceBox?>
+<?import javafx.scene.control.Button?>
 
 <!--
-    VISTA — player-registration.fxml  (RF1 Registrar jugador)
+    VISTA — player-registration.fxml  (RF1: Registrar jugador)
 
-    ESQUELETO PENDIENTE (equipo):
-    Agregar los campos: nombre, correo, username, avatar, nivel de experiencia,
-    y un boton "Registrar" enlazado al PlayerRegistrationController.
+    Campos del formulario:
+      - Nombre completo     → TextField nameField
+      - Email               → TextField emailField
+      - Username            → TextField usernameField
+      - Nivel de experiencia → ChoiceBox levelChoice
+      - Avatar              → 3 botones de selección (🧙 🤖 🦊)
+
+    Acciones:
+      - Registrar  → onRegistrarClicked()   llama a PlayerRegistry
+      - Volver     → onVolverClicked()      regresa al menú principal
+
+    El label statusLabel muestra el resultado del registro (éxito o error).
 -->
 <VBox xmlns="http://javafx.com/javafx"
       xmlns:fx="http://javafx.com/fxml"
       fx:controller="com.icesi.sokoban.controller.PlayerRegistrationController"
-      spacing="10"
-      style="-fx-padding: 20; -fx-background-color: #0f0e17;">
+      alignment="CENTER"
+      spacing="16"
+      style="-fx-background-color: #0f0e17; -fx-padding: 40;">
 
-    <Label text="Registro de jugador (pendiente de implementar)"
-           style="-fx-text-fill: #fffffe; -fx-font-size: 16px;"/>
+    <!-- Título -->
+    <Label text="Registro de Jugador"
+           style="-fx-text-fill: #fffffe;
+                  -fx-font-size: 32px;
+                  -fx-font-weight: bold;"/>
+
+    <Label text="Completa tus datos para comenzar"
+           style="-fx-text-fill: #a7a9be; -fx-font-size: 13px;"/>
+
+    <!-- Formulario -->
+    <VBox spacing="10" alignment="CENTER_LEFT" maxWidth="320">
+
+        <!-- Nombre -->
+        <Label text="Nombre completo" style="-fx-text-fill: #a7a9be; -fx-font-size: 12px;"/>
+        <TextField fx:id="nameField"
+                   promptText="Ej: Dayanna Fernández"
+                   style="-fx-background-color: #1a1a2e;
+                          -fx-text-fill: #fffffe;
+                          -fx-prompt-text-fill: #555577;
+                          -fx-border-color: #3da9fc;
+                          -fx-border-radius: 4;
+                          -fx-background-radius: 4;
+                          -fx-padding: 8;
+                          -fx-pref-width: 320;"/>
+
+        <!-- Email -->
+        <Label text="Correo electrónico" style="-fx-text-fill: #a7a9be; -fx-font-size: 12px;"/>
+        <TextField fx:id="emailField"
+                   promptText="Ej: dayanna@icesi.edu.co"
+                   style="-fx-background-color: #1a1a2e;
+                          -fx-text-fill: #fffffe;
+                          -fx-prompt-text-fill: #555577;
+                          -fx-border-color: #3da9fc;
+                          -fx-border-radius: 4;
+                          -fx-background-radius: 4;
+                          -fx-padding: 8;
+                          -fx-pref-width: 320;"/>
+
+        <!-- Username -->
+        <Label text="Username" style="-fx-text-fill: #a7a9be; -fx-font-size: 12px;"/>
+        <TextField fx:id="usernameField"
+                   promptText="Ej: dayfn"
+                   style="-fx-background-color: #1a1a2e;
+                          -fx-text-fill: #fffffe;
+                          -fx-prompt-text-fill: #555577;
+                          -fx-border-color: #3da9fc;
+                          -fx-border-radius: 4;
+                          -fx-background-radius: 4;
+                          -fx-padding: 8;
+                          -fx-pref-width: 320;"/>
+
+        <!-- Nivel de experiencia -->
+        <Label text="Nivel de experiencia" style="-fx-text-fill: #a7a9be; -fx-font-size: 12px;"/>
+        <ChoiceBox fx:id="levelChoice"
+                   prefWidth="320"
+                   style="-fx-background-color: #1a1a2e;
+                          -fx-mark-color: #3da9fc;
+                          -fx-border-color: #3da9fc;
+                          -fx-border-radius: 4;"/>
+
+        <!-- Avatar -->
+        <Label text="Elige tu avatar" style="-fx-text-fill: #a7a9be; -fx-font-size: 12px;"/>
+        <HBox spacing="12" alignment="CENTER_LEFT">
+            <Button fx:id="avatarWizard"
+                    text="🧙 Mago"
+                    onAction="#onAvatarWizard"
+                    style="-fx-background-color: #2a2a4a;
+                           -fx-text-fill: #fffffe;
+                           -fx-border-color: #555577;
+                           -fx-border-radius: 4;
+                           -fx-background-radius: 4;
+                           -fx-padding: 8 16 8 16;
+                           -fx-cursor: hand;"/>
+            <Button fx:id="avatarRobot"
+                    text="🤖 Robot"
+                    onAction="#onAvatarRobot"
+                    style="-fx-background-color: #2a2a4a;
+                           -fx-text-fill: #fffffe;
+                           -fx-border-color: #555577;
+                           -fx-border-radius: 4;
+                           -fx-background-radius: 4;
+                           -fx-padding: 8 16 8 16;
+                           -fx-cursor: hand;"/>
+            <Button fx:id="avatarFox"
+                    text="🦊 Zorro"
+                    onAction="#onAvatarFox"
+                    style="-fx-background-color: #2a2a4a;
+                           -fx-text-fill: #fffffe;
+                           -fx-border-color: #555577;
+                           -fx-border-radius: 4;
+                           -fx-background-radius: 4;
+                           -fx-padding: 8 16 8 16;
+                           -fx-cursor: hand;"/>
+        </HBox>
+
+    </VBox>
+
+    <!-- Mensaje de estado (éxito o error) -->
+    <Label fx:id="statusLabel"
+           text=""
+           wrapText="true"
+           style="-fx-text-fill: #a7a9be;
+                  -fx-font-size: 13px;
+                  -fx-font-weight: bold;"/>
+
+    <!-- Botones de acción -->
+    <HBox spacing="16" alignment="CENTER">
+        <Button text="✔  Registrar"
+                onAction="#onRegistrarClicked"
+                style="-fx-background-color: #ff8906;
+                       -fx-text-fill: #0f0e17;
+                       -fx-font-size: 15px;
+                       -fx-font-weight: bold;
+                       -fx-background-radius: 6;
+                       -fx-cursor: hand;
+                       -fx-padding: 10 28 10 28;"/>
+        <Button fx:id="volverButton"
+                text="← Volver"
+                onAction="#onVolverClicked"
+                style="-fx-background-color: #2a2a4a;
+                       -fx-text-fill: #fffffe;
+                       -fx-font-size: 15px;
+                       -fx-background-radius: 6;
+                       -fx-border-color: #555577;
+                       -fx-border-radius: 6;
+                       -fx-cursor: hand;
+                       -fx-padding: 10 28 10 28;"/>
+    </HBox>
+
 </VBox>

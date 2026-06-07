@@ -19,17 +19,13 @@ import java.util.ResourceBundle;
  * CONTROLLER — VictoryController
  *
  * Muestra los resultados de la partida ganada.
- * Recibe un objeto Stats via setStats() — GameController
- * lo llama justo antes de navegar a esta pantalla.
+ * Si hay un nivel siguiente (nivel < 3), muestra el botón
+ * "Siguiente Nivel" que carga directamente el nivel n+1.
  *
- * Patrón de paso de datos entre pantallas:
- *   1. GameController carga el FXML con FXMLLoader
- *   2. Obtiene este controlador con loader.getController()
- *   3. Llama controller.setStats(stats) para inyectar los datos
- *   4. Reemplaza la Scene
- *
- * initialize() se ejecuta ANTES de setStats(), por eso los labels
- * se actualizan en setStats() y no en initialize().
+ * Transición entre niveles:
+ *   Nivel 1 completado → botón "Siguiente Nivel" → carga nivel 2
+ *   Nivel 2 completado → botón "Siguiente Nivel" → carga nivel 3
+ *   Nivel 3 completado → no hay botón (es el último nivel)
  */
 public class VictoryController implements Initializable {
 
@@ -38,26 +34,62 @@ public class VictoryController implements Initializable {
     @FXML private Label  empujesLabel;
     @FXML private Label  tiempoLabel;
     @FXML private Label  puntajeLabel;
+    @FXML private Button siguienteButton;
     @FXML private Button rankingButton;
     @FXML private Button menuButton;
 
+    private int levelCompleted = 1;
+    private static final int MAX_LEVEL = 3;
+
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        // Los datos llegan por setStats() — no hay nada que inicializar aquí.
+        // Los datos llegan por setStats()
     }
 
     /**
-     * Inyecta los Stats de la partida y actualiza los labels.
-     * GameController llama este método después de loader.getController().
+     * Inyecta los Stats y configura la vista.
+     * Si el nivel completado no es el último, muestra el botón siguiente.
      */
     public void setStats(Stats stats) {
         if (stats == null) return;
+
+        this.levelCompleted = stats.getLevel();
 
         playerNameLabel.setText("¡Bien hecho, " + stats.getPlayerName() + "!");
         movimientosLabel.setText(String.valueOf(stats.getMovements()));
         empujesLabel.setText(String.valueOf(stats.getPushes()));
         tiempoLabel.setText(formatTime(stats.getTime()));
         puntajeLabel.setText(String.format("Puntaje: %.1f", stats.getScore()));
+
+        // Mostrar botón siguiente solo si hay un nivel siguiente
+        if (levelCompleted < MAX_LEVEL) {
+            siguienteButton.setVisible(true);
+            siguienteButton.setManaged(true);
+            siguienteButton.setText("Siguiente Nivel → (Nivel " + (levelCompleted + 1) + ")");
+        }
+    }
+
+    // ─────────────────────────────────────────────────────────────────────
+    // Navegación
+    // ─────────────────────────────────────────────────────────────────────
+
+    /**
+     * Carga el siguiente nivel directamente sin pasar por la selección.
+     */
+    @FXML
+    private void onSiguienteNivelClicked() throws IOException {
+        FXMLLoader loader = new FXMLLoader(
+                getClass().getResource("/com/icesi/sokoban/view/game.fxml"));
+        Parent root = loader.load();
+
+        GameController gameController = loader.getController();
+        gameController.setLevelNumber(levelCompleted + 1);
+
+        Scene scene = new Scene(root);
+        gameController.attachKeyHandlers(scene);
+
+        Stage stage = (Stage) siguienteButton.getScene().getWindow();
+        stage.setScene(scene);
     }
 
     @FXML
@@ -77,8 +109,6 @@ public class VictoryController implements Initializable {
     }
 
     private String formatTime(int seconds) {
-        int m = seconds / 60;
-        int s = seconds % 60;
-        return String.format("%d:%02d", m, s);
+        return String.format("%d:%02d", seconds / 60, seconds % 60);
     }
 }

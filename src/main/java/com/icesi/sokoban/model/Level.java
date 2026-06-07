@@ -78,18 +78,11 @@ public class Level {
         int playerCol = parseInt(extractValue(playerStartBlock, "col"));
         this.playerStartPosition = new Position(playerRow, playerCol);
 
-        // ── targets → metas del tablero ───────────────────────────────────
-        String targetsArray = extractArray(json, "targets");
-        CustomLinkedList<String> targetObjects = extractObjects(targetsArray);
-        for (int i = 0; i < targetObjects.size(); i++) {
-            String obj = targetObjects.get(i);
-            int r = parseInt(extractValue(obj, "row"));
-            int c = parseInt(extractValue(obj, "col"));
-            board.setCell(r, c, '.');
-            board.addGoal(new Position(r, c));
-        }
-
         // ── grid → rellena el tablero fila por fila ───────────────────────
+        // Nota: las metas (3) y cajas (2) se leen directamente del grid.
+        // No procesamos el array "targets" por separado porque el grid
+        // ya contiene toda la información y procesarlo dos veces
+        // duplicaría las goals en el Board.
         String gridArray = extractArray(json, "grid");
         CustomLinkedList<String> gridRows = extractArrayRows(gridArray);
 

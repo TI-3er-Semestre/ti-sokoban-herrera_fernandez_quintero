@@ -1,20 +1,100 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.scene.layout.VBox?>
+<?import javafx.scene.layout.HBox?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Button?>
+<?import javafx.geometry.Insets?>
 
 <!--
-    VISTA — main-menu.fxml  (RF3 cargar nivel, RF5 manual, RF9 cargar partida, RF11 ranking)
+    VISTA — main-menu.fxml
+    Pantalla de menú principal del juego Sokoban.
 
-    ESQUELETO PENDIENTE (equipo):
-    Agregar botones: Jugar, Cargar partida, Ranking, Manual, Salir.
+    Botones:
+      - Jugar          → onJugarClicked()       carga game.fxml
+      - Registro       → onRegistroClicked()    carga player-registration.fxml
+      - Ranking        → onRankingClicked()     carga ranking.fxml
+      - Salir          → onSalirClicked()       cierra la aplicación
+
+    La navegación entre pantallas se delega completamente al
+    MainMenuController — esta vista no tiene lógica Java.
 -->
 <VBox xmlns="http://javafx.com/javafx"
       xmlns:fx="http://javafx.com/fxml"
       fx:controller="com.icesi.sokoban.controller.MainMenuController"
-      spacing="10"
-      style="-fx-padding: 20; -fx-background-color: #0f0e17;">
+      alignment="CENTER"
+      spacing="20"
+      style="-fx-background-color: #0f0e17; -fx-padding: 60;">
 
-    <Label text="Menu principal (pendiente de implementar)"
-           style="-fx-text-fill: #fffffe; -fx-font-size: 16px;"/>
+    <!-- Título -->
+    <Label text="SOKOBAN"
+           style="-fx-text-fill: #fffffe;
+                  -fx-font-size: 48px;
+                  -fx-font-weight: bold;
+                  -fx-font-family: 'monospace';"/>
+
+    <Label text="Tarea Integradora — APO2 &amp; CyED1"
+           style="-fx-text-fill: #a7a9be;
+                  -fx-font-size: 14px;"/>
+
+    <!-- Espaciado entre título y botones -->
+    <VBox spacing="12" alignment="CENTER" style="-fx-padding: 30 0 0 0;">
+
+        <Button fx:id="jugarButton"
+                text="▶  Jugar"
+                onAction="#onJugarClicked"
+                prefWidth="220"
+                style="-fx-background-color: #ff8906;
+                       -fx-text-fill: #0f0e17;
+                       -fx-font-size: 16px;
+                       -fx-font-weight: bold;
+                       -fx-background-radius: 6;
+                       -fx-cursor: hand;
+                       -fx-padding: 12 0 12 0;"/>
+
+        <Button text="👤  Registro de Jugador"
+                onAction="#onRegistroClicked"
+                prefWidth="220"
+                style="-fx-background-color: #3da9fc;
+                       -fx-text-fill: #0f0e17;
+                       -fx-font-size: 15px;
+                       -fx-font-weight: bold;
+                       -fx-background-radius: 6;
+                       -fx-cursor: hand;
+                       -fx-padding: 10 0 10 0;"/>
+
+        <Button text="🏆  Ranking"
+                onAction="#onRankingClicked"
+                prefWidth="220"
+                style="-fx-background-color: #3da9fc;
+                       -fx-text-fill: #0f0e17;
+                       -fx-font-size: 15px;
+                       -fx-font-weight: bold;
+                       -fx-background-radius: 6;
+                       -fx-cursor: hand;
+                       -fx-padding: 10 0 10 0;"/>
+
+        <Button text="📖  Manual"
+                onAction="#onManualClicked"
+                prefWidth="220"
+                style="-fx-background-color: #3da9fc;
+                       -fx-text-fill: #0f0e17;
+                       -fx-font-size: 15px;
+                       -fx-font-weight: bold;
+                       -fx-background-radius: 6;
+                       -fx-cursor: hand;
+                       -fx-padding: 10 0 10 0;"/>
+
+        <Button text="✖  Salir"
+                onAction="#onSalirClicked"
+                prefWidth="220"
+                style="-fx-background-color: #ef4565;
+                       -fx-text-fill: #fffffe;
+                       -fx-font-size: 15px;
+                       -fx-font-weight: bold;
+                       -fx-background-radius: 6;
+                       -fx-cursor: hand;
+                       -fx-padding: 10 0 10 0;"/>
+    </VBox>
+
 </VBox>
