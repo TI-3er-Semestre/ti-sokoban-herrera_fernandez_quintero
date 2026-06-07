@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.canvas.Canvas?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Button?>
+
+<!--
+    VISTA — game.fxml
+
+    Responsabilidad MVC: SOLO estructura y disposicion visual.
+      - Declara los nodos de la interfaz en XML.
+      - Asigna fx:id para que el controlador inyecte los nodos con @FXML.
+      - Apunta al controlador con fx:controller.
+      - No contiene codigo Java ni logica del juego.
+
+    Nodos referenciados por el GameController (por fx:id):
+      #statusLabel        barra superior, instrucciones / estado
+      #moveCounterLabel   contador de movimientos
+      #pushCounterLabel   contador de empujes
+      #gameCanvas         lienzo donde se dibuja el tablero
+      #undoButton         boton de deshacer
+-->
+
+<VBox xmlns="http://javafx.com/javafx"
+      xmlns:fx="http://javafx.com/fxml"
+      fx:controller="com.icesi.sokoban.controller.GameController"
+      style="-fx-background-color: #0f0e17;"
+      spacing="0">
+
+    <!-- Barra superior de estado -->
+    <HBox style="-fx-background-color: #16152a; -fx-padding: 8 14 8 14;"
+          spacing="20">
+        <Label fx:id="statusLabel"
+               text="Flechas o WASD para mover · R para reiniciar"
+               style="-fx-font-size: 14px; -fx-font-weight: bold; -fx-text-fill: #fffffe;"/>
+    </HBox>
+
+    <!-- Barra de contadores -->
+    <HBox style="-fx-background-color: #1a1a2e; -fx-padding: 6 14 6 14;"
+          spacing="24">
+        <Label fx:id="moveCounterLabel"
+               text="Movimientos: 0"
+               style="-fx-font-size: 13px; -fx-text-fill: #f2cc8f;"/>
+        <Label fx:id="pushCounterLabel"
+               text="Empujes: 0"
+               style="-fx-font-size: 13px; -fx-text-fill: #e07a5f;"/>
+        <Region HBox.hgrow="ALWAYS"/>
+        <Button fx:id="undoButton"
+                text="Deshacer"
+                onAction="#onUndoClicked"
+                style="-fx-font-size: 12px;"/>
+    </HBox>
+
+    <!-- Lienzo del juego. El GameController ajusta su tamano al cargar el nivel. -->
+    <Canvas fx:id="gameCanvas" width="420" height="300"/>
+
+</VBox>

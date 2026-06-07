@@ -1,0 +1,5 @@
+/* Estilos globales de la aplicacion Sokoban. */
+/* TODO equipo: definir aqui los estilos compartidos entre pantallas. */
+.root {
+    -fx-background-color: #0f0e17;
+}

@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.canvas.Canvas?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Button?>
+
+<!--
+    VISTA — game.fxml
+
+    Nodos referenciados por GameController (por fx:id):
+      #statusLabel        barra superior, instrucciones / estado
+      #playerLabel        nombre del jugador activo
+      #moveCounterLabel   contador de movimientos
+      #pushCounterLabel   contador de empujes
+      #gameCanvas         lienzo donde se dibuja el tablero
+      #undoButton         boton de deshacer
+-->
+
+<VBox xmlns="http://javafx.com/javafx"
+      xmlns:fx="http://javafx.com/fxml"
+      fx:controller="com.icesi.sokoban.controller.GameController"
+      style="-fx-background-color: #0f0e17;"
+      spacing="0">
+
+    <!-- Barra superior de estado -->
+    <HBox style="-fx-background-color: #16152a; -fx-padding: 8 14 8 14;"
+          spacing="20">
+        <Label fx:id="statusLabel"
+               text="Flechas o WASD para mover · R para reiniciar"
+               style="-fx-font-size: 14px; -fx-font-weight: bold; -fx-text-fill: #fffffe;"/>
+    </HBox>
+
+    <!-- Barra de contadores -->
+    <HBox style="-fx-background-color: #1a1a2e; -fx-padding: 6 14 6 14;"
+          spacing="24">
+        <Label fx:id="playerLabel"
+               text="👤 Invitado"
+               style="-fx-font-size: 13px; -fx-text-fill: #3da9fc;"/>
+        <Label fx:id="moveCounterLabel"
+               text="Movimientos: 0"
+               style="-fx-font-size: 13px; -fx-text-fill: #f2cc8f;"/>
+        <Label fx:id="pushCounterLabel"
+               text="Empujes: 0"
+               style="-fx-font-size: 13px; -fx-text-fill: #e07a5f;"/>
+        <Region HBox.hgrow="ALWAYS"/>
+        <Button fx:id="undoButton"
+                text="Deshacer"
+                onAction="#onUndoClicked"
+                style="-fx-font-size: 12px;"/>
+    </HBox>
+
+    <!-- Lienzo del juego -->
+    <Canvas fx:id="gameCanvas" width="420" height="300"/>
+
+</VBox>
+

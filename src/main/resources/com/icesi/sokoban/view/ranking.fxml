@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ScrollPane?>
+
+<!--
+    VISTA — ranking.fxml  (RF11: Mostrar ranking de puntajes)
+
+    El RankingController construye las filas dinámicamente en initialize()
+    leyendo el BST de Stats. Esta vista solo provee el contenedor (#rankingContainer)
+    donde el controlador inyecta cada fila, y el botón para volver al menú.
+-->
+<VBox xmlns="http://javafx.com/javafx"
+      xmlns:fx="http://javafx.com/fxml"
+      fx:controller="com.icesi.sokoban.controller.RankingController"
+      alignment="CENTER"
+      spacing="16"
+      style="-fx-background-color: #0f0e17; -fx-padding: 40;">
+
+    <!-- Título -->
+    <Label fx:id="titleLabel"
+           text="🏆 Ranking de Puntajes"
+           style="-fx-text-fill: #fffffe;
+                  -fx-font-size: 32px;
+                  -fx-font-weight: bold;"/>
+
+    <Label text="Las mejores partidas completadas"
+           style="-fx-text-fill: #a7a9be; -fx-font-size: 13px;"/>
+
+    <!-- Tabla de puntajes — el controlador llena este VBox -->
+    <ScrollPane fitToWidth="true"
+                prefHeight="400"
+                style="-fx-background: #0f0e17;
+                       -fx-background-color: #0f0e17;
+                       -fx-border-color: #2e2f3e;
+                       -fx-border-radius: 6;">
+        <VBox fx:id="rankingContainer"
+              spacing="4"
+              style="-fx-padding: 8; -fx-background-color: #0f0e17;"/>
+    </ScrollPane>
+
+    <!-- Botón volver -->
+    <Button fx:id="volverButton"
+            text="← Volver al Menú"
+            onAction="#onVolverClicked"
+            style="-fx-background-color: #2a2a4a;
+                   -fx-text-fill: #fffffe;
+                   -fx-font-size: 15px;
+                   -fx-background-radius: 6;
+                   -fx-border-color: #555577;
+                   -fx-border-radius: 6;
+                   -fx-cursor: hand;
+                   -fx-padding: 10 28 10 28;"/>
+
+</VBox>
