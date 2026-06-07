@@ -28,19 +28,6 @@ import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.util.ResourceBundle;
 
-/**
- * CONTROLLER — GameController
- *
- * Game over ocurre en dos situaciones:
- *
- * 1. TIEMPO AGOTADO: el Timeline verifica cada segundo si segundos >= timeLimit.
- *    Si timeLimit == 0 el nivel no tiene límite (nivel 3).
- *
- * 2. DEADLOCK: después de cada movimiento se verifica si alguna caja
- *    está bloqueada en una esquina sin estar en una meta.
- *    Una caja está en deadlock si tiene obstáculo (pared/borde) tanto en
- *    el eje horizontal como en el vertical.
- */
 public class GameController implements Initializable {
 
     @FXML private Canvas gameCanvas;
@@ -60,9 +47,6 @@ public class GameController implements Initializable {
     private Timeline cronometro;
     private int segundos = 0;
 
-    // ─────────────────────────────────────────────────────────────────────
-    // initialize()
-    // ─────────────────────────────────────────────────────────────────────
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         renderer = new GameRenderer(gameCanvas);
@@ -81,15 +65,13 @@ public class GameController implements Initializable {
     }
 
     // ─────────────────────────────────────────────────────────────────────
-    // Cronómetro con detección de tiempo agotado
+    // Cronómetro
     // ─────────────────────────────────────────────────────────────────────
     private void iniciarCronometro() {
         segundos = 0;
         cronometro = new Timeline(new KeyFrame(Duration.seconds(1), e -> {
             segundos++;
             timerLabel.setText("⏱ " + formatTime(segundos));
-
-            // Verificar tiempo límite (0 = sin límite)
             int timeLimit = currentLevel != null ? currentLevel.getTimeLimit() : 0;
             if (timeLimit > 0 && segundos >= timeLimit && !gameEnded) {
                 gameEnded = true;
@@ -110,7 +92,7 @@ public class GameController implements Initializable {
     }
 
     // ─────────────────────────────────────────────────────────────────────
-    // API para LevelSelectController y GameOverController
+    // API pública
     // ─────────────────────────────────────────────────────────────────────
     public void setLevelNumber(int levelNumber) {
         this.levelNumber = levelNumber;
@@ -131,23 +113,7 @@ public class GameController implements Initializable {
     }
 
     // ─────────────────────────────────────────────────────────────────────
-    // Carga JSON
-    // ─────────────────────────────────────────────────────────────────────
-    private Level cargarNivelDesdeJson(int n) {
-        String path = "/com/icesi/sokoban/levels/level_" + n + ".json";
-        try (InputStream is = getClass().getResourceAsStream(path)) {
-            if (is == null) return buildFallbackLevel();
-            String json = new String(is.readAllBytes(), StandardCharsets.UTF_8);
-            Level level = new Level(n, "Nivel " + n);
-            level.loadFromJson(json);
-            return level;
-        } catch (Exception e) {
-            return buildFallbackLevel();
-        }
-    }
-
-    // ─────────────────────────────────────────────────────────────────────
-    // Teclado
+    // Teclado — actualiza sprite según dirección
     // ─────────────────────────────────────────────────────────────────────
     private void handleKey(KeyEvent event) {
         if (gameEnded) return;
@@ -170,6 +136,9 @@ public class GameController implements Initializable {
             default: return;
         }
 
+        // Actualizar sprite ANTES de renderizar
+        renderer.setLastDirection(dir);
+
         game.queueCommand(dir);
         game.processInputBuffer();
         renderer.render(game);
@@ -191,16 +160,29 @@ public class GameController implements Initializable {
     @FXML
     private void onUndoClicked() {
         if (game.undo()) {
-            gameEnded = false;
             renderer.render(game);
             updateLabels();
         }
     }
 
     // ─────────────────────────────────────────────────────────────────────
-    // Detección de deadlock
-    // Una caja está en deadlock si tiene obstáculo en ambos ejes
-    // (horizontal Y vertical) y no está sobre una meta.
+    // Carga JSON
+    // ─────────────────────────────────────────────────────────────────────
+    private Level cargarNivelDesdeJson(int n) {
+        String path = "/com/icesi/sokoban/levels/level_" + n + ".json";
+        try (InputStream is = getClass().getResourceAsStream(path)) {
+            if (is == null) return buildFallbackLevel();
+            String json = new String(is.readAllBytes(), StandardCharsets.UTF_8);
+            Level level = new Level(n, "Nivel " + n);
+            level.loadFromJson(json);
+            return level;
+        } catch (Exception e) {
+            return buildFallbackLevel();
+        }
+    }
+
+    // ─────────────────────────────────────────────────────────────────────
+    // Deadlock
     // ─────────────────────────────────────────────────────────────────────
     private boolean hayDeadlock() {
         com.icesi.sokoban.model.Board board = game.getBoard();
@@ -210,27 +192,16 @@ public class GameController implements Initializable {
             com.icesi.sokoban.model.Box caja = cajas.get(i);
             int r = caja.getPosition().getRow();
             int c = caja.getPosition().getColumn();
-
-            // Si la caja ya está en una meta, no es deadlock
             if (board.isGoal(r, c)) continue;
-
-            // Bloqueado verticalmente: hay pared arriba O abajo
-            boolean bloqueadoVertical = esBloqueado(board, r - 1, c) ||
-                    esBloqueado(board, r + 1, c);
-            // Bloqueado horizontalmente: hay pared a la izquierda O derecha
-            boolean bloqueadoHorizontal = esBloqueado(board, r, c - 1) ||
-                    esBloqueado(board, r, c + 1);
-
-            // Deadlock: atrapada en una esquina
-            if (bloqueadoVertical && bloqueadoHorizontal) return true;
+            boolean bloqueadoV = esBloqueado(board, r-1, c) || esBloqueado(board, r+1, c);
+            boolean bloqueadoH = esBloqueado(board, r, c-1) || esBloqueado(board, r, c+1);
+            if (bloqueadoV && bloqueadoH) return true;
         }
         return false;
     }
 
-    /** Retorna true si la posición es una pared o está fuera del tablero */
     private boolean esBloqueado(com.icesi.sokoban.model.Board board, int r, int c) {
-        if (r < 0 || r >= board.getHeight() || c < 0 || c >= board.getWidth())
-            return true;
+        if (r < 0 || r >= board.getHeight() || c < 0 || c >= board.getWidth()) return true;
         return board.getCell(r, c) == '#';
     }
 
@@ -269,7 +240,6 @@ public class GameController implements Initializable {
             javafx.scene.Parent root = loader.load();
             GameOverController gc = loader.getController();
             gc.setMotivo(motivo, levelNumber);
-
             Stage stage = (Stage) gameCanvas.getScene().getWindow();
             stage.setScene(new Scene(root));
         } catch (IOException e) {
@@ -292,14 +262,9 @@ public class GameController implements Initializable {
     // Fallback
     // ─────────────────────────────────────────────────────────────────────
     private Level buildFallbackLevel() {
-        com.icesi.sokoban.model.Board board =
-                new com.icesi.sokoban.model.Board(7, 5);
-        for (int c = 0; c < 7; c++) {
-            board.setCell(0, c, '#'); board.setCell(4, c, '#');
-        }
-        for (int r = 0; r < 5; r++) {
-            board.setCell(r, 0, '#'); board.setCell(r, 6, '#');
-        }
+        com.icesi.sokoban.model.Board board = new com.icesi.sokoban.model.Board(7, 5);
+        for (int c = 0; c < 7; c++) { board.setCell(0, c, '#'); board.setCell(4, c, '#'); }
+        for (int r = 0; r < 5; r++) { board.setCell(r, 0, '#'); board.setCell(r, 6, '#'); }
         board.setCell(2, 2, '$');
         board.setCell(2, 4, '.');
         board.addGoal(new com.icesi.sokoban.model.Position(2, 4));
