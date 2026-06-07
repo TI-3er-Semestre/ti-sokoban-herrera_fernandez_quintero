@@ -1,6 +1,7 @@
 package com.icesi.sokoban.structure.graph;
 
 import com.icesi.sokoban.structure.CustomLinkedList;
+import com.icesi.sokoban.structure.CustomQueue;
 
 public class GrafoMatriz<T> implements IGrafo<T> {
 
@@ -113,7 +114,9 @@ public class GrafoMatriz<T> implements IGrafo<T> {
     }
 
     @Override
-    public int cantidadVertices() { return contador; }
+    public int cantidadVertices() {
+        return contador;
+    }
 
     @Override
     public CustomLinkedList<T> dfs(T origen) {
@@ -157,11 +160,74 @@ public class GrafoMatriz<T> implements IGrafo<T> {
     }
 
     @Override
-    public CustomLinkedList<T> bfs(T origen) { return null; }
+    public CustomLinkedList<T> bfs(T origen) {
+        int origenIdx = obtenerIndice(origen);
+        if (origenIdx == -1) return new CustomLinkedList<>();
 
-    // =========================================================================
-    // FLOYD-WARSHALL  (Persona C)
-    // =========================================================================
+        // Inicializar todos los vértices
+        for (int i = 0; i < contador; i++) {
+            vertices.get(i).setColor(Vertice.Color.BLANCO);
+            vertices.get(i).setDistancia(INF);
+            vertices.get(i).setPredecesor(null);
+        }
+
+        // Configurar el origen
+        vertices.get(origenIdx).setColor(Vertice.Color.GRIS);
+        vertices.get(origenIdx).setDistancia(0);
+
+        // Usar la CustomQueue del proyecto
+        CustomQueue<Integer> cola = new CustomQueue<>();
+        cola.enqueue(origenIdx);
+
+        CustomLinkedList<T> resultado = new CustomLinkedList<>();
+
+        while (!cola.isEmpty()) {
+            int u = cola.dequeue();
+            resultado.add(vertices.get(u).getContenido());
+
+            // Revisar todos los vecinos
+            for (int v = 0; v < contador; v++) {
+                if (matrizAdyacencia[u][v] != INF && u != v) {
+                    if (vertices.get(v).getColor() == Vertice.Color.BLANCO) {
+                        vertices.get(v).setColor(Vertice.Color.GRIS);
+                        vertices.get(v).setDistancia(vertices.get(u).getDistancia() + 1);
+                        vertices.get(v).setPredecesor(vertices.get(u));
+                        cola.enqueue(v);
+                    }
+                }
+            }
+            vertices.get(u).setColor(Vertice.Color.NEGRO);
+        }
+        return resultado;
+    }
+
+    public CustomLinkedList<T> reconstruirCaminoBFS(T origen, T destino) {
+        // Primero ejecuta BFS desde el origen
+        bfs(origen);
+
+        int j = obtenerIndice(destino);
+        if (j == -1) throw new IllegalArgumentException("El destino no existe");
+
+        CustomLinkedList<T> camino = new CustomLinkedList<>();
+        Vertice<T> actual = vertices.get(j);
+
+        // Si no tiene predecesor y no es el origen, no hay camino
+        if (actual.getPredecesor() == null && !actual.getContenido().equals(origen)) {
+            return camino;
+        }
+
+        // Reconstruye el camino desde destino hasta origen
+        while (actual != null) {
+            camino.add(actual.getContenido());
+            actual = actual.getPredecesor();
+        }
+
+        return camino;
+    }
+
+
+    // FLOYD-WARSHALL
+
 
     /**
      * Floyd-Warshall: camino minimo entre TODOS los pares de vertices.
@@ -199,6 +265,57 @@ public class GrafoMatriz<T> implements IGrafo<T> {
         return dist;
     }
 
+    @Override
+    public CustomLinkedList<int[]> prim() {
+        if (contador == 0) return new CustomLinkedList<>();
+
+        boolean[] visitado = new boolean[contador]; // ¿ya está en el árbol?
+        int[] menorPeso = new int[contador];        // menor costo para llegar
+        int[] padre = new int[contador];            // de dónde vine
+
+        // Al inicio nadie está conectado
+        for (int i = 0; i < contador; i++) {
+            menorPeso[i] = INF;
+            padre[i] = -1;
+        }
+
+        // Arranco desde el vértice 0
+        menorPeso[0] = 0;
+
+        for (int i = 0; i < contador; i++) {
+
+            //Busco el vértice más barato que aún no haya visitado
+            int u = -1;
+            for (int v = 0; v < contador; v++) {
+                if (!visitado[v] && (u == -1 || menorPeso[v] < menorPeso[u])) {
+                    u = v;
+                }
+            }
+
+            //Lo marco como visitado
+            visitado[u] = true;
+
+            //Reviso sus vecinos: ¿puedo llegar más barato desde u?
+            for (int v = 0; v < contador; v++) {
+                boolean hayConexion = matrizAdyacencia[u][v] != INF;
+                boolean esMasBarato = matrizAdyacencia[u][v] < menorPeso[v];
+                if (!visitado[v] && hayConexion && esMasBarato) {
+                    menorPeso[v] = matrizAdyacencia[u][v];
+                    padre[v] = u;
+                }
+            }
+        }
+
+        //Armo la lista de aristas del árbol resultante
+        CustomLinkedList<int[]> mst = new CustomLinkedList<>();
+        for (int v = 1; v < contador; v++) {
+            if (padre[v] != -1) {
+                mst.add(new int[]{padre[v], v, menorPeso[v]});
+            }
+        }
+        return mst;
+    }
+
     /**
      * Reconstruye el camino minimo exacto entre dos vertices.
      * Requiere haber ejecutado floydWarshall() antes.
@@ -223,26 +340,27 @@ public class GrafoMatriz<T> implements IGrafo<T> {
         return camino;
     }
 
-    // =========================================================================
-    // KRUSKAL  (Persona C)
-    // =========================================================================
+
+    // KRUSKAL
+
 
     /**
      * Algoritmo de Kruskal: encuentra el ARBOL GENERADOR MINIMO (AGM).
-     *
+     * <p>
      * Voraz (greedy):
-     *   1. Ordenar TODAS las aristas de menor a mayor peso.
-     *   2. Recorrerlas en orden. Si los extremos estan en conjuntos
-     *      distintos, agregar al AGM y unir los conjuntos. Si ya estan
-     *      en el mismo conjunto, descartar (formaria ciclo).
-     *   3. Terminar al tener n-1 aristas.
-     *
+     * 1. Ordenar TODAS las aristas de menor a mayor peso.
+     * 2. Recorrerlas en orden. Si los extremos estan en conjuntos
+     * distintos, agregar al AGM y unir los conjuntos. Si ya estan
+     * en el mismo conjunto, descartar (formaria ciclo).
+     * 3. Terminar al tener n-1 aristas.
+     * <p>
      * El grafo se trata como NO DIRIGIDO: solo se procesa i < j.
-     *
+     * <p>
      * Complejidad: O(E log E) dominado por el ordenamiento.
      *
      * @return lista de aristas del AGM
      */
+    @Override
     public CustomLinkedList<Arista<T>> kruskal() {
         CustomLinkedList<Arista<T>> agm = new CustomLinkedList<>();
         if (contador == 0) return agm;
@@ -295,7 +413,7 @@ public class GrafoMatriz<T> implements IGrafo<T> {
         return agm;
     }
 
-    /** Costo total del AGM: suma de los pesos de las aristas devueltas por kruskal(). */
+    @Override
     public int costoAGM() {
         CustomLinkedList<Arista<T>> agm = kruskal();
         int total = 0;
@@ -303,5 +421,9 @@ public class GrafoMatriz<T> implements IGrafo<T> {
             total += agm.get(i).getPeso();
         }
         return total;
+    }
+
+    public CustomLinkedList<Vertice<T>> getVertices() {
+        return vertices;
     }
 }
