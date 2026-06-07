@@ -5,6 +5,7 @@ import com.icesi.sokoban.model.Direction;
 import com.icesi.sokoban.model.Game;
 import com.icesi.sokoban.model.GameStatus;
 import com.icesi.sokoban.model.Level;
+import com.icesi.sokoban.model.Player;
 import com.icesi.sokoban.model.Position;
 import com.icesi.sokoban.ui.GameRenderer;
 
@@ -22,32 +23,19 @@ import java.util.ResourceBundle;
 /**
  * CONTROLLER — GameController
  *
- * Es el intermediario del patron MVC para la pantalla de juego.
- * Tiene dos responsabilidades:
+ * Intermediario MVC para la pantalla de juego.
+ * Traduce teclas en operaciones del modelo (Game) y
+ * manda a redibujar el tablero cuando algo cambia.
  *
- *   1. Controlador FXML: el FXMLLoader lo instancia, le inyecta los
- *      nodos @FXML desde game.fxml y llama a initialize().
- *
- *   2. Controlador del juego: traduce las teclas en operaciones del
- *      modelo (Game) y manda a redibujar el tablero cuando algo cambia.
- *
- * Reglas:
- *   - El modelo (Game) no sabe nada de JavaFX.
- *   - El archivo game.fxml no tiene codigo Java.
- *   - Esta clase es la unica que toca ambas capas.
- *
- * ESTADO ACTUAL (para el equipo):
- *   Este controlador ya conecta teclado -> Game -> render.
- *   PENDIENTE por implementar el equipo:
- *     - Cargar niveles reales desde JSON (hoy usa un nivel de prueba).
- *     - Boton de deshacer enlazado al metodo undo() del Game.
- *     - Mostrar tiempo transcurrido en vivo.
- *     - Pantalla de victoria.
+ * Ahora también muestra el nombre del jugador activo
+ * consultando PlayerRegistry.getInstance().getActivePlayer().
+ * Si no hay jugador registrado, muestra "Invitado".
  */
 public class GameController implements Initializable {
 
-    // ── Nodos inyectados desde game.fxml (coinciden por fx:id) ────────────
+    // ── Nodos inyectados desde game.fxml ──────────────────────────────────
     @FXML private Canvas gameCanvas;
+    @FXML private Label  playerLabel;
     @FXML private Label  moveCounterLabel;
     @FXML private Label  pushCounterLabel;
     @FXML private Label  statusLabel;
@@ -58,13 +46,21 @@ public class GameController implements Initializable {
     private GameRenderer renderer;
 
     // ─────────────────────────────────────────────────────────────────────
-    // initialize() — lo llama el FXMLLoader despues de inyectar los @FXML
+    // initialize()
     // ─────────────────────────────────────────────────────────────────────
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         renderer = new GameRenderer(gameCanvas);
 
-        // TODO equipo: reemplazar este nivel de prueba por carga desde JSON.
+        // Mostrar el jugador activo — si no hay ninguno, "Invitado"
+        Player activePlayer = PlayerRegistry.getInstance().getActivePlayer();
+        if (activePlayer != null) {
+            playerLabel.setText("👤 " + activePlayer.getUsername());
+        } else {
+            playerLabel.setText("👤 Invitado");
+        }
+
+        // TODO: reemplazar por carga desde JSON
         Level testLevel = buildTestLevel();
         game.loadLevel(testLevel);
 
@@ -74,18 +70,16 @@ public class GameController implements Initializable {
     }
 
     /**
-     * Registra el manejo del teclado sobre la Scene.
-     * Se llama desde SokobanApplication despues de crear la Scene,
-     * porque la Scene no existe cuando initialize() se ejecuta.
+     * Registra el teclado sobre la Scene.
+     * Se llama desde MainMenuController después de crear la Scene.
      */
     public void attachKeyHandlers(Scene scene) {
         scene.setOnKeyPressed(this::handleKey);
     }
 
     // ─────────────────────────────────────────────────────────────────────
-    // Manejo de eventos
+    // Manejo de eventos de teclado
     // ─────────────────────────────────────────────────────────────────────
-
     private void handleKey(KeyEvent event) {
         Direction dir = null;
         switch (event.getCode()) {
@@ -103,18 +97,13 @@ public class GameController implements Initializable {
                 return;
         }
 
-        // Usa el buffer de entrada (cola FIFO) del modelo
         game.queueCommand(dir);
         game.processInputBuffer();
-
         renderer.render(game);
         updateLabels();
         event.consume();
     }
 
-    /**
-     * Accion del boton "Deshacer". Enlazado en game.fxml con onAction.
-     */
     @FXML
     private void onUndoClicked() {
         if (game.undo()) {
@@ -124,9 +113,8 @@ public class GameController implements Initializable {
     }
 
     // ─────────────────────────────────────────────────────────────────────
-    // Actualizacion de la vista
+    // Actualización de la vista
     // ─────────────────────────────────────────────────────────────────────
-
     private void updateLabels() {
         moveCounterLabel.setText("Movimientos: " + game.getMoveCount());
         pushCounterLabel.setText("Empujes: " + game.getPushCount());
@@ -140,11 +128,10 @@ public class GameController implements Initializable {
 
     // ─────────────────────────────────────────────────────────────────────
     // Nivel de prueba temporal
-    // TODO equipo: borrar esto cuando Level.loadFromJson() este implementado.
+    // TODO: reemplazar por carga desde JSON cuando se implemente la selección de nivel
     // ─────────────────────────────────────────────────────────────────────
     private Level buildTestLevel() {
         Board board = new Board(7, 5);
-        // Perimetro de muros
         for (int c = 0; c < 7; c++) {
             board.setCell(0, c, '#');
             board.setCell(4, c, '#');
@@ -153,7 +140,6 @@ public class GameController implements Initializable {
             board.setCell(r, 0, '#');
             board.setCell(r, 6, '#');
         }
-        // Una caja y una meta
         board.setCell(2, 2, '$');
         board.setCell(2, 4, '.');
         board.addGoal(new Position(2, 4));
