@@ -5,12 +5,18 @@ import com.icesi.sokoban.structure.BinarySearchTree;
 import com.icesi.sokoban.structure.CustomLinkedList;
 
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.stage.Stage;
 
+import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 
@@ -18,41 +24,34 @@ import java.util.ResourceBundle;
  * CONTROLLER — RankingController  (RF11: Mostrar ranking de puntajes)
  *
  * Responsabilidades:
- *   - Recibir el BST de Stats del juego (inyectado desde afuera o estático).
- *   - Extraer los puntajes en orden descendente (inOrder del BST, que ordena
- *     por score gracias a Stats.compareTo).
- *   - Mostrar las primeras N entradas del ranking en la vista ranking.fxml.
+ *   - Leer el BST estático de Stats y construir las filas de la tabla.
+ *   - Mostrar hasta 10 partidas ordenadas por puntaje descendente.
+ *   - Navegar de vuelta al menú principal.
  *
- * El BST almacena Stats ordenados por score (mayor puntaje = raíz más a la
- * izquierda, porque Stats.compareTo ordena descendentemente).
+ * El BST es estático — GameController llama registrarPartida() al ganar,
+ * y esta pantalla lo lee cada vez que se abre.
  */
 public class RankingController implements Initializable {
 
-    // ── Registro global de partidas (compartido con GameController) ───────
-    // Se usa un BST estático para que persista entre pantallas sin necesidad
-    // de un sistema de persistencia externo.
+    // ── BST estático compartido con GameController ────────────────────────
     private static final BinarySearchTree<Stats> rankingBST = new BinarySearchTree<>();
-
     private static final int MAX_ENTRIES = 10;
 
     // ── Nodos FXML ────────────────────────────────────────────────────────
-    @FXML private VBox rankingContainer;
-    @FXML private Label titleLabel;
+    @FXML private VBox   rankingContainer;
+    @FXML private Label  titleLabel;
+    @FXML private Button volverButton;
 
     // ─────────────────────────────────────────────────────────────────────
-    //  initialize() — construye la vista con los datos del BST
+    //  initialize() — construye la tabla con los datos del BST
     // ─────────────────────────────────────────────────────────────────────
-
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        if (rankingContainer == null) return; // protección en tests sin FXML
+        if (rankingContainer == null) return;
 
         rankingContainer.getChildren().clear();
-
-        // Encabezado de columnas
         rankingContainer.getChildren().add(buildHeader());
 
-        // Obtener entradas ordenadas por score descendente
         CustomLinkedList<Stats> ordenadas = getTopStats(MAX_ENTRIES);
 
         if (ordenadas.isEmpty()) {
@@ -69,37 +68,35 @@ public class RankingController implements Initializable {
     }
 
     // ─────────────────────────────────────────────────────────────────────
-    //  API pública — GameController llama esto al terminar un nivel
+    //  API pública — GameController llama esto al ganar un nivel
     // ─────────────────────────────────────────────────────────────────────
-
-    /**
-     * Registra una partida terminada en el BST de ranking.
-     * Llamar desde GameController cuando state == WON.
-     */
     public static void registrarPartida(Stats stats) {
         if (stats != null && stats.isCompleted()) {
             rankingBST.insert(stats);
         }
     }
 
-    /**
-     * Retorna el BST completo (para testing o persistencia futura).
-     */
     public static BinarySearchTree<Stats> getRankingBST() {
         return rankingBST;
     }
 
     // ─────────────────────────────────────────────────────────────────────
+    //  Navegación
+    // ─────────────────────────────────────────────────────────────────────
+    @FXML
+    private void onVolverClicked() throws IOException {
+        Parent root = FXMLLoader.load(
+                getClass().getResource("/com/icesi/sokoban/view/main-menu.fxml"));
+        Stage stage = (Stage) volverButton.getScene().getWindow();
+        stage.setScene(new Scene(root));
+    }
+
+    // ─────────────────────────────────────────────────────────────────────
     //  Lógica interna
     // ─────────────────────────────────────────────────────────────────────
-
-    /**
-     * Extrae hasta maxN Stats del BST en orden (inOrder = ascendente por
-     * compareTo, que en Stats significa descendente por score).
-     */
     private CustomLinkedList<Stats> getTopStats(int maxN) {
         CustomLinkedList<Stats> todas = rankingBST.inOrderTraversal();
-        CustomLinkedList<Stats> top = new CustomLinkedList<>();
+        CustomLinkedList<Stats> top   = new CustomLinkedList<>();
         int limit = Math.min(maxN, todas.size());
         for (int i = 0; i < limit; i++) {
             top.add(todas.get(i));
@@ -110,20 +107,18 @@ public class RankingController implements Initializable {
     // ─────────────────────────────────────────────────────────────────────
     //  Construcción de filas UI
     // ─────────────────────────────────────────────────────────────────────
-
     private HBox buildHeader() {
         HBox header = new HBox(10);
         header.setPadding(new Insets(4, 8, 4, 8));
         header.setStyle("-fx-background-color: #2e2f3e; -fx-background-radius: 6;");
-
         header.getChildren().addAll(
-                styledLabel("#",      40,  "#a7a9be", true),
-                styledLabel("Jugador", 160, "#a7a9be", true),
-                styledLabel("Nivel",   60,  "#a7a9be", true),
-                styledLabel("Mov",     60,  "#a7a9be", true),
-                styledLabel("Empujes", 70,  "#a7a9be", true),
-                styledLabel("Tiempo",  70,  "#a7a9be", true),
-                styledLabel("Puntaje", 90,  "#a7a9be", true)
+                styledLabel("#",        40,  "#a7a9be", true),
+                styledLabel("Jugador",  160, "#a7a9be", true),
+                styledLabel("Nivel",    60,  "#a7a9be", true),
+                styledLabel("Mov",      60,  "#a7a9be", true),
+                styledLabel("Empujes",  70,  "#a7a9be", true),
+                styledLabel("Tiempo",   70,  "#a7a9be", true),
+                styledLabel("Puntaje",  90,  "#a7a9be", true)
         );
         return header;
     }
@@ -131,27 +126,23 @@ public class RankingController implements Initializable {
     private HBox buildRow(int position, Stats stats) {
         HBox row = new HBox(10);
         row.setPadding(new Insets(6, 8, 6, 8));
-
-        // Alternar colores de fila
         String bg = (position % 2 == 0) ? "#1a1b2e" : "#16213e";
         row.setStyle("-fx-background-color: " + bg + "; -fx-background-radius: 4;");
 
-        // Medalla para el top 3
-        String posStr = position <= 3
+        String posStr   = position <= 3
                 ? (new String[]{"🥇", "🥈", "🥉"})[position - 1]
                 : String.valueOf(position);
-
         String scoreStr = String.format("%.1f", stats.getScore());
         String timeStr  = formatTime(stats.getTime());
 
         row.getChildren().addAll(
-                styledLabel(posStr,                     40,  "#fffffe", false),
-                styledLabel(stats.getPlayerName(),      160, "#fffffe", false),
-                styledLabel(String.valueOf(stats.getLevel()), 60, "#a7a9be", false),
+                styledLabel(posStr,                              40,  "#fffffe", false),
+                styledLabel(stats.getPlayerName(),              160, "#fffffe", false),
+                styledLabel(String.valueOf(stats.getLevel()),    60,  "#a7a9be", false),
                 styledLabel(String.valueOf(stats.getMovements()), 60, "#a7a9be", false),
-                styledLabel(String.valueOf(stats.getPushes()),    70, "#a7a9be", false),
-                styledLabel(timeStr,                    70,  "#a7a9be", false),
-                styledLabel(scoreStr,                   90,  "#ff8906", false)
+                styledLabel(String.valueOf(stats.getPushes()),   70,  "#a7a9be", false),
+                styledLabel(timeStr,                             70,  "#a7a9be", false),
+                styledLabel(scoreStr,                            90,  "#ff8906", false)
         );
         return row;
     }
@@ -160,8 +151,8 @@ public class RankingController implements Initializable {
         Label lbl = new Label(text);
         lbl.setMinWidth(width);
         lbl.setPrefWidth(width);
-        String weight = bold ? "bold" : "normal";
-        lbl.setStyle("-fx-text-fill: " + color + "; -fx-font-size: 13px; -fx-font-weight: " + weight + ";");
+        lbl.setStyle("-fx-text-fill: " + color + "; -fx-font-size: 13px; " +
+                "-fx-font-weight: " + (bold ? "bold" : "normal") + ";");
         return lbl;
     }
 
