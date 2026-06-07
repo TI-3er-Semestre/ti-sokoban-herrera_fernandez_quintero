@@ -8,6 +8,8 @@ import com.icesi.sokoban.model.Player;
 import com.icesi.sokoban.model.Stats;
 import com.icesi.sokoban.ui.GameRenderer;
 
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -17,6 +19,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.input.KeyEvent;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -28,60 +31,34 @@ import java.util.ResourceBundle;
 /**
  * CONTROLLER — GameController
  *
- * Carga el nivel desde JSON usando Level.loadFromJson().
- * El número de nivel (1, 2 o 3) lo recibe de LevelSelectController
- * a través de setLevelNumber() antes de que initialize() corra.
+ * Game over ocurre en dos situaciones:
  *
- * Flujo de carga:
- *   1. LevelSelectController llama setLevelNumber(n)
- *   2. initialize() lee levelNumber y llama cargarNivelDesdeJson(n)
- *   3. cargarNivelDesdeJson() lee el archivo JSON desde resources
- *      y llama level.loadFromJson(jsonString)
- *   4. Si falla la carga JSON, cae al nivel de prueba como fallback
+ * 1. TIEMPO AGOTADO: el Timeline verifica cada segundo si segundos >= timeLimit.
+ *    Si timeLimit == 0 el nivel no tiene límite (nivel 3).
+ *
+ * 2. DEADLOCK: después de cada movimiento se verifica si alguna caja
+ *    está bloqueada en una esquina sin estar en una meta.
+ *    Una caja está en deadlock si tiene obstáculo (pared/borde) tanto en
+ *    el eje horizontal como en el vertical.
  */
 public class GameController implements Initializable {
 
-    // ── Nodos inyectados desde game.fxml ──────────────────────────────────
     @FXML private Canvas gameCanvas;
     @FXML private Label  playerLabel;
     @FXML private Label  moveCounterLabel;
     @FXML private Label  pushCounterLabel;
+    @FXML private Label  timerLabel;
     @FXML private Label  statusLabel;
     @FXML private Button undoButton;
 
-    // ── Modelo ────────────────────────────────────────────────────────────
     private final Game game = new Game();
     private GameRenderer renderer;
-    private boolean victoryHandled = false;
-
-    // Nivel a cargar — LevelSelectController lo inyecta antes de initialize()
+    private boolean gameEnded = false;
     private int levelNumber = 1;
+    private Level currentLevel;
 
-    // ─────────────────────────────────────────────────────────────────────
-    // API para LevelSelectController
-    // ─────────────────────────────────────────────────────────────────────
-
-    /**
-     * Recibe el número de nivel elegido en la pantalla de selección.
-     * Debe llamarse ANTES de que JavaFX llame initialize().
-     * En la práctica, FXMLLoader llama initialize() al final de load(),
-     * así que LevelSelectController hace: loader.load() → getController()
-     * → setLevelNumber() → ya es tarde.
-     *
-     * Por eso initialize() usa levelNumber con valor por defecto 1,
-     * y setLevelNumber() recarga el nivel si ya está inicializado.
-     */
-    public void setLevelNumber(int levelNumber) {
-        this.levelNumber = levelNumber;
-        // Recargar el nivel con el nuevo número
-        Level level = cargarNivelDesdeJson(levelNumber);
-        game.loadLevel(level);
-        if (renderer != null) {
-            renderer.resizeToBoard(game.getBoard());
-            renderer.render(game);
-            updateLabels();
-        }
-    }
+    private Timeline cronometro;
+    private int segundos = 0;
 
     // ─────────────────────────────────────────────────────────────────────
     // initialize()
@@ -90,21 +67,63 @@ public class GameController implements Initializable {
     public void initialize(URL location, ResourceBundle resources) {
         renderer = new GameRenderer(gameCanvas);
 
-        // Mostrar jugador activo
         Player activePlayer = PlayerRegistry.getInstance().getActivePlayer();
-        if (activePlayer != null) {
-            playerLabel.setText("👤 " + activePlayer.getUsername());
-        } else {
-            playerLabel.setText("👤 Invitado");
-        }
+        playerLabel.setText(activePlayer != null
+                ? "👤 " + activePlayer.getUsername() : "👤 Invitado");
 
-        // Cargar nivel desde JSON (levelNumber viene de setLevelNumber o default 1)
-        Level level = cargarNivelDesdeJson(levelNumber);
-        game.loadLevel(level);
+        currentLevel = cargarNivelDesdeJson(levelNumber);
+        game.loadLevel(currentLevel);
 
         renderer.resizeToBoard(game.getBoard());
         renderer.render(game);
         updateLabels();
+        iniciarCronometro();
+    }
+
+    // ─────────────────────────────────────────────────────────────────────
+    // Cronómetro con detección de tiempo agotado
+    // ─────────────────────────────────────────────────────────────────────
+    private void iniciarCronometro() {
+        segundos = 0;
+        cronometro = new Timeline(new KeyFrame(Duration.seconds(1), e -> {
+            segundos++;
+            timerLabel.setText("⏱ " + formatTime(segundos));
+
+            // Verificar tiempo límite (0 = sin límite)
+            int timeLimit = currentLevel != null ? currentLevel.getTimeLimit() : 0;
+            if (timeLimit > 0 && segundos >= timeLimit && !gameEnded) {
+                gameEnded = true;
+                detenerCronometro();
+                navegarAGameOver("⏰ ¡Se agotó el tiempo!");
+            }
+        }));
+        cronometro.setCycleCount(Timeline.INDEFINITE);
+        cronometro.play();
+    }
+
+    private void detenerCronometro() {
+        if (cronometro != null) cronometro.stop();
+    }
+
+    private String formatTime(int s) {
+        return String.format("%d:%02d", s / 60, s % 60);
+    }
+
+    // ─────────────────────────────────────────────────────────────────────
+    // API para LevelSelectController y GameOverController
+    // ─────────────────────────────────────────────────────────────────────
+    public void setLevelNumber(int levelNumber) {
+        this.levelNumber = levelNumber;
+        this.gameEnded = false;
+        currentLevel = cargarNivelDesdeJson(levelNumber);
+        game.loadLevel(currentLevel);
+        detenerCronometro();
+        iniciarCronometro();
+        if (renderer != null) {
+            renderer.resizeToBoard(game.getBoard());
+            renderer.render(game);
+            updateLabels();
+        }
     }
 
     public void attachKeyHandlers(Scene scene) {
@@ -112,38 +131,26 @@ public class GameController implements Initializable {
     }
 
     // ─────────────────────────────────────────────────────────────────────
-    // Carga de niveles desde JSON
+    // Carga JSON
     // ─────────────────────────────────────────────────────────────────────
-
-    /**
-     * Lee el archivo JSON del nivel desde resources y construye el Level.
-     * Si la lectura falla, retorna el nivel de prueba como fallback.
-     *
-     * Los archivos viven en:
-     *   src/main/resources/com/icesi/sokoban/levels/level_N.json
-     */
     private Level cargarNivelDesdeJson(int n) {
         String path = "/com/icesi/sokoban/levels/level_" + n + ".json";
         try (InputStream is = getClass().getResourceAsStream(path)) {
-            if (is == null) {
-                System.err.println("No se encontró el archivo: " + path);
-                return buildFallbackLevel();
-            }
+            if (is == null) return buildFallbackLevel();
             String json = new String(is.readAllBytes(), StandardCharsets.UTF_8);
             Level level = new Level(n, "Nivel " + n);
             level.loadFromJson(json);
             return level;
         } catch (Exception e) {
-            System.err.println("Error cargando nivel " + n + ": " + e.getMessage());
             return buildFallbackLevel();
         }
     }
 
     // ─────────────────────────────────────────────────────────────────────
-    // Manejo de teclado
+    // Teclado
     // ─────────────────────────────────────────────────────────────────────
     private void handleKey(KeyEvent event) {
-        if (victoryHandled) return;
+        if (gameEnded) return;
 
         Direction dir = null;
         switch (event.getCode()) {
@@ -153,7 +160,9 @@ public class GameController implements Initializable {
             case RIGHT: case D: dir = Direction.RIGHT; break;
             case R:
                 game.resetLevel();
-                victoryHandled = false;
+                gameEnded = false;
+                detenerCronometro();
+                iniciarCronometro();
                 renderer.render(game);
                 updateLabels();
                 event.consume();
@@ -166,23 +175,67 @@ public class GameController implements Initializable {
         renderer.render(game);
         updateLabels();
 
-        if (game.getState() == GameStatus.WON && !victoryHandled) {
-            victoryHandled = true;
+        if (game.getState() == GameStatus.WON && !gameEnded) {
+            gameEnded = true;
+            detenerCronometro();
             navegarAVictoria();
+        } else if (!gameEnded && hayDeadlock()) {
+            gameEnded = true;
+            detenerCronometro();
+            navegarAGameOver("📦 ¡Una caja quedó bloqueada sin salida!");
         }
+
         event.consume();
     }
 
     @FXML
     private void onUndoClicked() {
         if (game.undo()) {
+            gameEnded = false;
             renderer.render(game);
             updateLabels();
         }
     }
 
     // ─────────────────────────────────────────────────────────────────────
-    // Victoria
+    // Detección de deadlock
+    // Una caja está en deadlock si tiene obstáculo en ambos ejes
+    // (horizontal Y vertical) y no está sobre una meta.
+    // ─────────────────────────────────────────────────────────────────────
+    private boolean hayDeadlock() {
+        com.icesi.sokoban.model.Board board = game.getBoard();
+        com.icesi.sokoban.structure.CustomLinkedList<com.icesi.sokoban.model.Box> cajas = game.getBoxes();
+
+        for (int i = 0; i < cajas.size(); i++) {
+            com.icesi.sokoban.model.Box caja = cajas.get(i);
+            int r = caja.getPosition().getRow();
+            int c = caja.getPosition().getColumn();
+
+            // Si la caja ya está en una meta, no es deadlock
+            if (board.isGoal(r, c)) continue;
+
+            // Bloqueado verticalmente: hay pared arriba O abajo
+            boolean bloqueadoVertical = esBloqueado(board, r - 1, c) ||
+                    esBloqueado(board, r + 1, c);
+            // Bloqueado horizontalmente: hay pared a la izquierda O derecha
+            boolean bloqueadoHorizontal = esBloqueado(board, r, c - 1) ||
+                    esBloqueado(board, r, c + 1);
+
+            // Deadlock: atrapada en una esquina
+            if (bloqueadoVertical && bloqueadoHorizontal) return true;
+        }
+        return false;
+    }
+
+    /** Retorna true si la posición es una pared o está fuera del tablero */
+    private boolean esBloqueado(com.icesi.sokoban.model.Board board, int r, int c) {
+        if (r < 0 || r >= board.getHeight() || c < 0 || c >= board.getWidth())
+            return true;
+        return board.getCell(r, c) == '#';
+    }
+
+    // ─────────────────────────────────────────────────────────────────────
+    // Navegación
     // ─────────────────────────────────────────────────────────────────────
     private void navegarAVictoria() {
         try {
@@ -190,12 +243,9 @@ public class GameController implements Initializable {
             String playerId   = activePlayer != null ? activePlayer.getUsername() : "invitado";
             String playerName = activePlayer != null ? activePlayer.getUsername() : "Invitado";
 
-            Stats stats = new Stats(
-                    playerId, playerName, levelNumber,
+            Stats stats = new Stats(playerId, playerName, levelNumber,
                     game.getMoveCount(), game.getPushCount(),
-                    (int) game.getElapsedTime(), true,
-                    LocalDate.now().toString()
-            );
+                    segundos, true, LocalDate.now().toString());
 
             RankingController.registrarPartida(stats);
 
@@ -212,19 +262,34 @@ public class GameController implements Initializable {
         }
     }
 
+    private void navegarAGameOver(String motivo) {
+        try {
+            FXMLLoader loader = new FXMLLoader(
+                    getClass().getResource("/com/icesi/sokoban/view/gameover.fxml"));
+            javafx.scene.Parent root = loader.load();
+            GameOverController gc = loader.getController();
+            gc.setMotivo(motivo, levelNumber);
+
+            Stage stage = (Stage) gameCanvas.getScene().getWindow();
+            stage.setScene(new Scene(root));
+        } catch (IOException e) {
+            statusLabel.setText("Game Over: " + motivo);
+        }
+    }
+
     // ─────────────────────────────────────────────────────────────────────
     // Labels
     // ─────────────────────────────────────────────────────────────────────
     private void updateLabels() {
-        moveCounterLabel.setText("Movimientos: " + game.getMoveCount());
-        pushCounterLabel.setText("Empujes: " + game.getPushCount());
+        moveCounterLabel.setText("👣 Mov: " + game.getMoveCount());
+        pushCounterLabel.setText("📦 Emp: " + game.getPushCount());
         statusLabel.setText(game.getState() == GameStatus.WON
                 ? "¡Nivel completado!"
                 : "Flechas o WASD para mover · R para reiniciar");
     }
 
     // ─────────────────────────────────────────────────────────────────────
-    // Fallback — nivel mínimo si falla la carga JSON
+    // Fallback
     // ─────────────────────────────────────────────────────────────────────
     private Level buildFallbackLevel() {
         com.icesi.sokoban.model.Board board =
