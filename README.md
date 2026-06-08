@@ -76,10 +76,13 @@ java -cp bin:lib/junit.jar org.junit.runner.JUnitCore test.GameTest
 - Confiabilidad = 1 - 0.00 = 1.00
 - Completitud = 98/14 = 1.00
 
-### Iteration 2: [commit-sha]
-- Density of errors-failures = 
-- Reliability = 
-- Completeness = 
+<img width="1820" height="535" alt="image" src="https://github.com/user-attachments/assets/443ea052-1154-4323-8316-4e3a0324e02d" />
+
+### Iteración 2 — 2f29322
+- Tests totales: 98 | Fallos: 0
+- Densidad de errores = 0/98 = 0.00
+- Confiabilidad = 1 - 0.00 = 1.00
+- Completitud = 98/14 = 1.00
 
 ### Iteration 3: [commit-sha]
 - Density of errors-failures = 
