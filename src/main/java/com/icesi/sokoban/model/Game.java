@@ -4,8 +4,10 @@ import com.icesi.sokoban.structure.CustomLinkedList;
 import com.icesi.sokoban.structure.CustomStack;
 import com.icesi.sokoban.structure.CustomQueue;
 import com.icesi.sokoban.structure.TranspositionTable;
+import java.io.Serializable;
 
-public class Game {
+public class Game implements Serializable {
+    private static final long serialVersionUID = 1L;
     private Board board;
     private Player player;
     private CustomLinkedList<Box> boxes;

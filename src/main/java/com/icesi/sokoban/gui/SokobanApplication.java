@@ -5,8 +5,12 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import javafx.event.EventHandler;
+import javafx.stage.WindowEvent;
 
 import com.icesi.sokoban.controller.MainMenuController;
+import com.icesi.sokoban.controller.GamePersistence;
+import com.icesi.sokoban.controller.GameController;
 
 /**
  * MAIN — Punto de entrada de la aplicacion.
@@ -30,6 +34,7 @@ import com.icesi.sokoban.controller.MainMenuController;
  *   4. controller.attachKeyHandlers(scene)
  *        Registra el manejo del teclado. Se hace aqui y no en initialize()
  *        porque la Scene todavia no existe cuando initialize() se ejecuta.
+ *        El objeto Game completo se serializa en savegame.dat
  *
  *   5. stage.show()
  *        Muestra la ventana, ya pintada y con el teclado conectado.
@@ -59,6 +64,14 @@ public class SokobanApplication extends Application {
         primaryStage.setScene(scene);
         primaryStage.setResizable(false);
         primaryStage.show();
+        primaryStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
+            @Override
+            public void handle(WindowEvent event) {
+                if (GameController.getActiveGame() != null){
+                    GamePersistence.saveGame(GameController.getActiveGame());
+                }
+            }
+        });
     }
 
     public static void main(String[] args) {

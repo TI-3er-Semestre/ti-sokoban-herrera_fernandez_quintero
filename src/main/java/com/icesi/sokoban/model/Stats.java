@@ -1,6 +1,9 @@
 package com.icesi.sokoban.model;
 
-public class Stats implements Comparable<Stats> {
+import java.io.Serializable;
+
+public class Stats implements Comparable<Stats>, Serializable {
+    private static final long serialVersionUID= 1L;
 
     private String playerId;
     private String playerName;

@@ -1,8 +1,10 @@
 package com.icesi.sokoban.model;
 
 import com.icesi.sokoban.structure.CustomLinkedList;
+import java.io.Serializable;
 
-public class GameSnapshot {
+public class GameSnapshot implements Serializable {
+    private static final long serialVersionUID= 1L;
 
     private Position playerPosition;
     private CustomLinkedList<Position> boxPositions;
