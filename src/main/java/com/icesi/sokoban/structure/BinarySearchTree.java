@@ -4,10 +4,10 @@ public class BinarySearchTree<T extends Comparable<T>> {
     private Node<T> root;
     private int size;
 
-    private static class Node<T> {
-        T data;
-        Node<T> left;
-        Node<T> right;
+    public static class Node<T> {
+        public T data;
+        public Node<T> left;
+        public Node<T> right;
 
         Node(T data) {
             this.data = data;
@@ -21,7 +21,8 @@ public class BinarySearchTree<T extends Comparable<T>> {
         this.size = 0;
     }
 
-    // Inserta un elemento manteniendo la propiedad BST. Duplicados se ignoran
+    public Node<T> getRoot() { return root; }
+
     public void insert(T element) {
         root = insertRec(root, element);
     }
@@ -37,7 +38,6 @@ public class BinarySearchTree<T extends Comparable<T>> {
         return node;
     }
 
-    // Retorna true si el elemento existe en el arbol
     public boolean search(T element) {
         Node<T> current = root;
         while (current != null) {
@@ -48,7 +48,6 @@ public class BinarySearchTree<T extends Comparable<T>> {
         return false;
     }
 
-    // Elimina el elemento del arbol. Retorna true si fue encontrado y eliminado
     public boolean delete(T element) {
         int before = size;
         root = deleteRec(root, element);
@@ -74,7 +73,6 @@ public class BinarySearchTree<T extends Comparable<T>> {
         return node;
     }
 
-    // Recorrido inorden: izquierda, raiz, derecha. Devuelve elementos ascendentes
     public CustomLinkedList<T> inOrderTraversal() {
         CustomLinkedList<T> result = new CustomLinkedList<>();
         inOrderRec(root, result);
@@ -88,7 +86,6 @@ public class BinarySearchTree<T extends Comparable<T>> {
         inOrderRec(node.right, result);
     }
 
-    // Recorrido preorden: raiz, izquierda, derecha
     public CustomLinkedList<T> preOrderTraversal() {
         CustomLinkedList<T> result = new CustomLinkedList<>();
         preOrderRec(root, result);
@@ -102,7 +99,6 @@ public class BinarySearchTree<T extends Comparable<T>> {
         preOrderRec(node.right, result);
     }
 
-    // Recorrido postorden: izquierda, derecha, raiz
     public CustomLinkedList<T> postOrderTraversal() {
         CustomLinkedList<T> result = new CustomLinkedList<>();
         postOrderRec(root, result);
@@ -116,7 +112,6 @@ public class BinarySearchTree<T extends Comparable<T>> {
         result.add(node.data);
     }
 
-    // Retorna el elemento minimo del arbol
     public T findMin() {
         if (isEmpty()) throw new IllegalStateException("Tree is empty");
         return findMinNode(root).data;
@@ -127,7 +122,6 @@ public class BinarySearchTree<T extends Comparable<T>> {
         return node;
     }
 
-    // Retorna el elemento maximo del arbol
     public T findMax() {
         if (isEmpty()) throw new IllegalStateException("Tree is empty");
         Node<T> current = root;
@@ -135,16 +129,7 @@ public class BinarySearchTree<T extends Comparable<T>> {
         return current.data;
     }
 
-    public int size() {
-        return size;
-    }
-
-    public boolean isEmpty() {
-        return size == 0;
-    }
-
-    public void clear() {
-        root = null;
-        size = 0;
-    }
+    public int size() { return size; }
+    public boolean isEmpty() { return size == 0; }
+    public void clear() { root = null; size = 0; }
 }
