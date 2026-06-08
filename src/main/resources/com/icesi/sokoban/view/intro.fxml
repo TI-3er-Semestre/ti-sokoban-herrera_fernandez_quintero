@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.media.MediaView?>
+<?import javafx.scene.image.ImageView?>
+
+<!--
+    VISTA — intro.fxml
+
+    Pantalla de introducción que se muestra SOLO al arrancar la app.
+    Tiene dos capas apiladas en un StackPane:
+      1. MediaView — reproduce el video de intro
+      2. ImageView — muestra "PRESS ANY KEY TO START" cuando el video termina
+
+    IntroController maneja:
+      - Reproducir el video al inicializar
+      - Mostrar la imagen cuando el video termina
+      - Navegar al menú principal al presionar cualquier tecla
+-->
+<StackPane xmlns="http://javafx.com/javafx"
+           xmlns:fx="http://javafx.com/fxml"
+           fx:controller="com.icesi.sokoban.controller.IntroController"
+           style="-fx-background-color: black;">
+
+    <!-- Video de intro -->
+    <MediaView fx:id="mediaView"
+               fitWidth="840"
+               fitHeight="560"
+               preserveRatio="true"/>
+
+    <!-- Imagen "Press Any Key" — oculta hasta que el video termina -->
+    <ImageView fx:id="pressAnyKeyImage"
+               fitWidth="840"
+               fitHeight="560"
+               preserveRatio="true"
+               visible="false"/>
+
+</StackPane>
