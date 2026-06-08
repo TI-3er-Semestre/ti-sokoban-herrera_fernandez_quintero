@@ -130,30 +130,51 @@ java -cp bin:lib/junit.jar org.junit.runner.JUnitCore test.GameTest
 - Reliability = 
 - Completeness = 
 
-### Iteration 11: [commit-sha]
-- Density of errors-failures = 
-- Reliability = 
-- Completeness = 
+### Iteration 11 — a32e338 (2026-05-24)
+Creación de la interfaz `IGrafo` y la clase `Vertice` — cimiento de toda la estructura del grafo.
 
-### Iteration 12: [commit-sha]
-- Density of errors-failures = 
-- Reliability = 
-- Completeness = 
+- Tests totales: 71 | Fallos: 0
+- Densidad de errores = 0/71 = 0.00
+- Confiabilidad = 1 − 0.00 = 1.00
+- Completitud = 71/14 = 5.07
 
-### Iteration 13: [commit-sha]
-- Density of errors-failures = 
-- Reliability = 
-- Completeness = 
+### Iteration 12 — 9407044 (2026-05-24)
+Implementación completa de DFS en `GrafoMatriz` con sistema de colores y timestamps.
 
-### Iteration 14: [commit-sha]
-- Density of errors-failures = 
-- Reliability = 
-- Completeness = 
+- Tests totales: 71 | Fallos: 0
+- Densidad de errores = 0/71 = 0.00
+- Confiabilidad = 1 − 0.00 = 1.00
+- Completitud = 71/14 = 5.07
 
-### Iteration 15: [commit-sha]
-- Density of errors-failures = 
-- Reliability = 
-- Completeness = 
+### Iteration 13 — 6af43d9 (2026-05-31)
+Implementación de BFS en `GrafoMatriz` con `CustomQueue`, colores y distancias.
+<img width="957" height="551" alt="image" src="https://github.com/user-attachments/assets/8678c516-78c7-48f9-906c-afc15894723c" />
+
+
+- Tests totales: 79 | Fallos: 0
+- Densidad de errores = 0/79 = 0.00
+- Confiabilidad = 1 − 0.00 = 1.00
+- Completitud = 79/14 = 5.64
+
+### Iteration 14 — 66cacc3 (2026-06-01)
+Creación de `GrafoLista` con listas de adyacencia implementando BFS, DFS, Floyd-Warshall, Prim y Kruskal.
+<img width="887" height="387" alt="image" src="https://github.com/user-attachments/assets/027fa5c6-7156-42ee-8c86-b788356bcaee" />
+
+
+- Tests totales: 87 | Fallos: 0
+- Densidad de errores = 0/87 = 0.00
+- Confiabilidad = 1 − 0.00 = 1.00
+- Completitud = 87/14 = 6.21
+
+### Iteration 15 — 820fc23 (2026-06-04)
+Creación de `MstSolver` para resolver el árbol de expansión mínima de metas en ambas representaciones.
+<img width="890" height="302" alt="image" src="https://github.com/user-attachments/assets/bac9fab4-50e9-4767-8dd2-c6a534336765" />
+
+
+- Tests totales: 98 | Fallos: 0
+- Densidad de errores = 0/98 = 0.00
+- Confiabilidad = 1 − 0.00 = 1.00
+- Completitud = 98/14 = 7.00
 
 ## Formulas
 - **Density of errors-failures** = total failures / total tests
