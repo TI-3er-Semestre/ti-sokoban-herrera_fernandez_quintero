@@ -105,20 +105,33 @@ java -cp bin:lib/junit.jar org.junit.runner.JUnitCore test.GameTest
 - Reliability = 
 - Completeness = 
 
-### Iteration 6: 222bbf6
-- Density of errors-failures = 
-- Reliability = 
-- Completeness = 
+### Iteration 6: f6e54fa
+- Tests totales: 0 | Fallos: 0 (Error de compilación)
+- Densidad de errores = 0.00
+- Confiabilidad = 0.00
+- Completitud = 0.00
 
-### Iteration 7: ec68863
-- Density of errors-failures = 
-- Reliability = 
-- Completeness = 
+> ⚠️ **Nota de Calidad:** Este commit presenta un bloqueo crítico en la integración debido a un conflicto de duplicación de archivos (`GrafoMatriz.java` presente de forma simultánea en la raíz de estructuras y en el subpaquete `.graph`). Al no superar la fase de compilación por inconsistencia de tipos, las métricas automatizadas de pruebas se reducen a cero, registrando una confiabilidad nula (0.00) hasta su posterior resolución.
 
-### Iteration 8: ec3d4fe
-- Density of errors-failures = 
-- Reliability = 
-- Completeness = 
+<img width="1805" height="274" alt="image" src="https://github.com/user-attachments/assets/0907db33-223e-4f66-a87d-f3a4b9adef3c" />
+
+  
+### Iteration 7: d111118
+- Tests totales: 90 | Fallos: 11
+- Densidad de errores = 11/90 = 0.12
+- Confiabilidad = 1 - 0.12 = 0.88
+- Completitud = 90/14 = 6.43
+  
+<img width="1830" height="541" alt="image" src="https://github.com/user-attachments/assets/79be66a7-1c41-41b0-bd80-edc2fa83c51b" />
+
+  
+### Iteration 8: ec68863
+- Tests totales: 105 | Fallos: 7
+- Densidad de errores = 7/105 = 0.07
+- Confiabilidad = 1 - 0.07 = 0.93
+- Completitud = 105/14 = 7.50
+
+<img width="1806" height="523" alt="image" src="https://github.com/user-attachments/assets/e47f9457-70d4-477b-a1de-b0c46cb9ca63" />
 
 ### Iteration 9: 690a543
 - Tests totales: 101 | Fallos: 1
