@@ -162,4 +162,47 @@ public class SokobanSolverTest {
         assertThrows(IllegalArgumentException.class,
                 () -> new SokobanSolver(game));
     }
+
+    //Pruebas del selector de algoritmo: BFS vs DFS
+    @Test
+    public void resolver_conDFS_encuentraSolucion() {
+        Game game = construirNivelResoluble();
+        SokobanSolver solver = new SokobanSolver(game);
+        CustomLinkedList<Direction> solucion =
+                solver.resolver(SokobanSolver.Algoritmo.DFS);
+        assertFalse(solucion.isEmpty());
+    }
+
+    @Test
+    public void resolver_conDFS_secuenciaDevuelta_realmenteGanaElNivel() {
+        Game game = construirNivelResoluble();
+        SokobanSolver solver = new SokobanSolver(game);
+        CustomLinkedList<Direction> solucion =
+                solver.resolver(SokobanSolver.Algoritmo.DFS);
+        for (int i = 0; i < solucion.size(); i++) {
+            game.move(solucion.get(i));
+        }
+        assertTrue(game.isLevelComplete());
+        assertEquals(GameStatus.WON, game.getState());
+    }
+
+    @Test
+    public void resolver_conDFS_nivelSinSolucion_retornaListaVacia() {
+        Game game = construirNivelSinSolucion();
+        SokobanSolver solver = new SokobanSolver(game);
+        CustomLinkedList<Direction> solucion =
+                solver.resolver(SokobanSolver.Algoritmo.DFS);
+        assertTrue(solucion.isEmpty());
+    }
+
+    @Test
+    public void resolver_conBFS_devuelveCaminoMinimo() {
+        // Basta un empuje a la derecha (1 movimiento). BFS da el camino minimo.
+        Game game = construirNivelResoluble();
+        SokobanSolver solver = new SokobanSolver(game);
+        CustomLinkedList<Direction> solucion =
+                solver.resolver(SokobanSolver.Algoritmo.BFS);
+        assertEquals(1, solucion.size());
+        assertEquals(Direction.RIGHT, solucion.get(0));
+    }
 }

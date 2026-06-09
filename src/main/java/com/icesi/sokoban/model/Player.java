@@ -1,6 +1,9 @@
 package com.icesi.sokoban.model;
 
-public class Player {
+import java.io.Serializable;
+
+public class Player implements Serializable {
+    private static final long serialVersionUID=1L;
 
     // User registration data
     private String name;
