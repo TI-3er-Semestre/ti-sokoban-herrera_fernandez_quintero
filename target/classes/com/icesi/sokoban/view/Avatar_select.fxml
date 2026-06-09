@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.media.MediaView?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+
+<StackPane xmlns="http://javafx.com/javafx"
+           xmlns:fx="http://javafx.com/fxml"
+           fx:controller="com.icesi.sokoban.controller.AvatarSelectController"
+           prefWidth="840" prefHeight="840">
+
+    <ImageView fitWidth="840" fitHeight="840" preserveRatio="false">
+        <image>
+            <Image url="@../sprites/pages/avatar_select_bg.png"/>
+        </image>
+    </ImageView>
+
+    <Pane prefWidth="840" prefHeight="840">
+
+        <!-- Video — centrado en el recuadro de la imagen de fondo -->
+        <MediaView fx:id="mediaView"
+                   layoutX="218" layoutY="260"
+                   fitWidth="430" fitHeight="350"
+                   preserveRatio="false"/>
+
+        <Label fx:id="skinNameLabel"
+               text="Mage"
+               layoutX="198" layoutY="580"
+               prefWidth="444"
+               opacity="0"
+               style="-fx-text-fill: #fffffe; -fx-font-size: 22px;
+                      -fx-font-weight: bold; -fx-alignment: CENTER;"/>
+
+        <!-- Flecha izquierda -->
+        <Button fx:id="anteriorButton"
+                onAction="#onAnteriorClicked"
+                layoutX="20" layoutY="260"
+                prefWidth="140" prefHeight="140"
+                opacity="0.01"
+                style="-fx-cursor: hand; -fx-background-color: transparent;"/>
+
+        <!-- Flecha derecha -->
+        <Button onAction="#onSiguienteClicked"
+                layoutX="680" layoutY="260"
+                prefWidth="140" prefHeight="140"
+                opacity="0.01"
+                style="-fx-cursor: hand; -fx-background-color: transparent;"/>
+
+        <!-- Elegir este avatar -->
+        <Button onAction="#onElegirClicked"
+                layoutX="50" layoutY="720"
+                prefWidth="380" prefHeight="90"
+                opacity="0.01"
+                style="-fx-cursor: hand; -fx-background-color: transparent;"/>
+
+        <!-- Volver al menú -->
+        <Button fx:id="volverButton"
+                onAction="#onVolverClicked"
+                layoutX="450" layoutY="720"
+                prefWidth="340" prefHeight="90"
+                opacity="0.01"
+                style="-fx-cursor: hand; -fx-background-color: transparent;"/>
+
+    </Pane>
+
+</StackPane>
+

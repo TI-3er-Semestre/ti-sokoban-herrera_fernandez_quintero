@@ -225,9 +225,9 @@ public class GameController implements Initializable {
     }
 
     private void actualizarControlesSolver() {
-        boolean esNivel3 = (levelNumber == 3);   // el auto-solver es para el escenario experto
-        solverBox.setVisible(esNivel3);
-        solverBox.setManaged(esNivel3);
+        boolean nivelResoluble = (levelNumber == 1 || levelNumber == 2);
+        solverBox.setVisible(nivelResoluble);
+        solverBox.setManaged(nivelResoluble);
     }
 
     @FXML
