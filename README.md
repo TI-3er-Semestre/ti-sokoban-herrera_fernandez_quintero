@@ -105,30 +105,36 @@ java -cp bin:lib/junit.jar org.junit.runner.JUnitCore test.GameTest
 - Reliability = 
 - Completeness = 
 
-### Iteration 6: [commit-sha]
+### Iteration 6: 222bbf6
 - Density of errors-failures = 
 - Reliability = 
 - Completeness = 
 
-### Iteration 7: [commit-sha]
+### Iteration 7: ec68863
 - Density of errors-failures = 
 - Reliability = 
 - Completeness = 
 
-### Iteration 8: [commit-sha]
+### Iteration 8: ec3d4fe
 - Density of errors-failures = 
 - Reliability = 
 - Completeness = 
 
-### Iteration 9: [commit-sha]
-- Density of errors-failures = 
-- Reliability = 
-- Completeness = 
+### Iteration 9: 690a543
+- Tests totales: 101 | Fallos: 1
+- Densidad de errores = 1/101 = 0.01
+- Confiabilidad = 1 - 0.01 = 0.99
+- Completitud = 101/14 = 7.21
 
-### Iteration 10: [commit-sha]
-- Density of errors-failures = 
-- Reliability = 
-- Completeness = 
+<img width="1837" height="722" alt="image" src="https://github.com/user-attachments/assets/53902493-4378-4b39-8ff1-c7b2c2c181ea" />
+
+### Iteration 10: afbf4eb
+- Tests totales: 105 | Fallos: 0
+- Densidad de errores = 0/105 = 0.00
+- Confiabilidad = 1 - 0.01 = 1.00
+- Completitud = 105/14 = 7.50
+
+<img width="1817" height="863" alt="image" src="https://github.com/user-attachments/assets/d242995a-2fa8-4817-9e23-c7955b7b6368" />
 
 ### Iteration 11 — a32e338 (2026-05-24)
 Creación de la interfaz `IGrafo` y la clase `Vertice` — cimiento de toda la estructura del grafo.
