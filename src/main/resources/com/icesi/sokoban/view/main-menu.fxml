@@ -23,7 +23,7 @@
     <!-- Imagen de fondo con los botones dibujados -->
     <ImageView fitWidth="840" fitHeight="690" preserveRatio="false">
         <image>
-            <Image url="@../sprites/main_menu_bg.png"/>
+            <Image url="@../sprites/pages/main_menu_bg.png"/>
         </image>
     </ImageView>
 
@@ -33,36 +33,36 @@
         <!-- Jugar -->
         <Button fx:id="jugarButton"
                 onAction="#onJugarClicked"
-                layoutX="300" layoutY="252"
-                prefWidth="245" prefHeight="35"
+                layoutX="300" layoutY="245"
+                prefWidth="235" prefHeight="48"
                 opacity="0.0"
                 style="-fx-cursor: hand;"/>
 
         <!-- Registro de Jugador -->
         <Button onAction="#onRegistroClicked"
-                layoutX="300" layoutY="315"
-                prefWidth="245" prefHeight="35"
+                layoutX="300" layoutY="300"
+                prefWidth="235" prefHeight="48"
                 opacity="0.0"
                 style="-fx-cursor: hand;"/>
 
         <!-- Ranking -->
         <Button onAction="#onRankingClicked"
-                layoutX="300" layoutY="375"
-                prefWidth="245" prefHeight="35"
+                layoutX="300" layoutY="378"
+                prefWidth="235" prefHeight="45"
                 opacity="0.0"
                 style="-fx-cursor: hand;"/>
 
         <!-- Manual -->
         <Button onAction="#onManualClicked"
-                layoutX="300" layoutY="440"
-                prefWidth="245" prefHeight="35"
+                layoutX="300" layoutY="445"
+                prefWidth="235" prefHeight="45"
                 opacity="0.0"
                 style="-fx-cursor: hand;"/>
 
         <!-- Salir -->
         <Button onAction="#onSalirClicked"
-                layoutX="300" layoutY="510"
-                prefWidth="245" prefHeight="35"
+                layoutX="300" layoutY="500"
+                prefWidth="235" prefHeight="45"
                 opacity="0.0"
                 style="-fx-cursor: hand;"/>
 
