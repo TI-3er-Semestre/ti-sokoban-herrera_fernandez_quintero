@@ -68,80 +68,132 @@ java -cp bin:lib/junit.jar org.junit.runner.JUnitCore test.GameTest
 
 ## Quality Indicators
 
-### Iteration 1: [commit-sha]
-- Density of errors-failures = 
-- Reliability = 
-- Completeness = 
+<img width="937" height="428" alt="image" src="https://github.com/user-attachments/assets/c0ee1313-db21-43fe-bfd6-cf30b40d74bd" />
 
-### Iteration 2: [commit-sha]
-- Density of errors-failures = 
-- Reliability = 
-- Completeness = 
+### Iteración 1 — 0509690
+- Tests totales: 98 | Fallos: 0
+- Densidad de errores = 0/98 = 0.00
+- Confiabilidad = 1 - 0.00 = 1.00
+- Completitud = 98/14 = 1.00
 
-### Iteration 3: [commit-sha]
-- Density of errors-failures = 
-- Reliability = 
-- Completeness = 
+<img width="1820" height="535" alt="image" src="https://github.com/user-attachments/assets/443ea052-1154-4323-8316-4e3a0324e02d" />
 
-### Iteration 4: [commit-sha]
-- Density of errors-failures = 
-- Reliability = 
-- Completeness = 
+### Iteración 2 — 2f29322
+- Tests totales: 98 | Fallos: 0
+- Densidad de errores = 0/98 = 0.00
+- Confiabilidad = 1 - 0.00 = 1.00
+- Completitud = 98/14 = 1.00
+
+<img width="1865" height="318" alt="image" src="https://github.com/user-attachments/assets/aad75790-37da-48ec-8263-d701ef839d79" />
+
+### Iteración 3 — f959eb0
+- Tests totales: 98 | Fallos: 0
+- Densidad de errores = 0/98 = 0.00
+- Confiabilidad = 1 - 0.00 = 1.00
+- Completitud = 98/14 = 1.00
+
+<img width="1900" height="590" alt="image" src="https://github.com/user-attachments/assets/f756df2f-72b5-4aaa-9463-04b14946943c" />
+
+### Iteración 4 — feat(ui): pantalla de introducción con video y press any key
+- Tests totales: 98 | Fallos: 0
+- Densidad de errores = 0/98 = 0.00
+- Confiabilidad = 1 - 0.00 = 1.00
+- Completitud = 98/14 = 1.00
 
 ### Iteration 5: [commit-sha]
 - Density of errors-failures = 
 - Reliability = 
 - Completeness = 
 
-### Iteration 6: [commit-sha]
-- Density of errors-failures = 
-- Reliability = 
-- Completeness = 
+### Iteration 6: f6e54fa
+- Tests totales: 0 | Fallos: 0 (Error de compilación)
+- Densidad de errores = 0.00
+- Confiabilidad = 0.00
+- Completitud = 0.00
 
-### Iteration 7: [commit-sha]
-- Density of errors-failures = 
-- Reliability = 
-- Completeness = 
+> ⚠️ **Nota de Calidad:** Este commit presenta un bloqueo crítico en la integración debido a un conflicto de duplicación de archivos (`GrafoMatriz.java` presente de forma simultánea en la raíz de estructuras y en el subpaquete `.graph`). Al no superar la fase de compilación por inconsistencia de tipos, las métricas automatizadas de pruebas se reducen a cero, registrando una confiabilidad nula (0.00) hasta su posterior resolución.
 
-### Iteration 8: [commit-sha]
-- Density of errors-failures = 
-- Reliability = 
-- Completeness = 
+<img width="1805" height="274" alt="image" src="https://github.com/user-attachments/assets/0907db33-223e-4f66-a87d-f3a4b9adef3c" />
 
-### Iteration 9: [commit-sha]
-- Density of errors-failures = 
-- Reliability = 
-- Completeness = 
+  
+### Iteration 7: d111118
+- Tests totales: 90 | Fallos: 11
+- Densidad de errores = 11/90 = 0.12
+- Confiabilidad = 1 - 0.12 = 0.88
+- Completitud = 90/14 = 6.43
+  
+<img width="1830" height="541" alt="image" src="https://github.com/user-attachments/assets/79be66a7-1c41-41b0-bd80-edc2fa83c51b" />
 
-### Iteration 10: [commit-sha]
-- Density of errors-failures = 
-- Reliability = 
-- Completeness = 
+  
+### Iteration 8: ec68863
+- Tests totales: 105 | Fallos: 7
+- Densidad de errores = 7/105 = 0.07
+- Confiabilidad = 1 - 0.07 = 0.93
+- Completitud = 105/14 = 7.50
 
-### Iteration 11: [commit-sha]
-- Density of errors-failures = 
-- Reliability = 
-- Completeness = 
+<img width="1806" height="523" alt="image" src="https://github.com/user-attachments/assets/e47f9457-70d4-477b-a1de-b0c46cb9ca63" />
 
-### Iteration 12: [commit-sha]
-- Density of errors-failures = 
-- Reliability = 
-- Completeness = 
+### Iteration 9: 690a543
+- Tests totales: 101 | Fallos: 1
+- Densidad de errores = 1/101 = 0.01
+- Confiabilidad = 1 - 0.01 = 0.99
+- Completitud = 101/14 = 7.21
 
-### Iteration 13: [commit-sha]
-- Density of errors-failures = 
-- Reliability = 
-- Completeness = 
+<img width="1837" height="722" alt="image" src="https://github.com/user-attachments/assets/53902493-4378-4b39-8ff1-c7b2c2c181ea" />
 
-### Iteration 14: [commit-sha]
-- Density of errors-failures = 
-- Reliability = 
-- Completeness = 
+### Iteration 10: afbf4eb
+- Tests totales: 105 | Fallos: 0
+- Densidad de errores = 0/105 = 0.00
+- Confiabilidad = 1 - 0.01 = 1.00
+- Completitud = 105/14 = 7.50
 
-### Iteration 15: [commit-sha]
-- Density of errors-failures = 
-- Reliability = 
-- Completeness = 
+<img width="1817" height="863" alt="image" src="https://github.com/user-attachments/assets/d242995a-2fa8-4817-9e23-c7955b7b6368" />
+
+### Iteration 11 — a32e338 (2026-05-24)
+Creación de la interfaz `IGrafo` y la clase `Vertice` — cimiento de toda la estructura del grafo.
+
+- Tests totales: 71 | Fallos: 0
+- Densidad de errores = 0/71 = 0.00
+- Confiabilidad = 1 − 0.00 = 1.00
+- Completitud = 71/14 = 5.07
+
+### Iteration 12 — 9407044 (2026-05-24)
+Implementación completa de DFS en `GrafoMatriz` con sistema de colores y timestamps.
+
+- Tests totales: 71 | Fallos: 0
+- Densidad de errores = 0/71 = 0.00
+- Confiabilidad = 1 − 0.00 = 1.00
+- Completitud = 71/14 = 5.07
+
+### Iteration 13 — 6af43d9 (2026-05-31)
+Implementación de BFS en `GrafoMatriz` con `CustomQueue`, colores y distancias.
+<img width="957" height="551" alt="image" src="https://github.com/user-attachments/assets/8678c516-78c7-48f9-906c-afc15894723c" />
+
+
+- Tests totales: 79 | Fallos: 0
+- Densidad de errores = 0/79 = 0.00
+- Confiabilidad = 1 − 0.00 = 1.00
+- Completitud = 79/14 = 5.64
+
+### Iteration 14 — 66cacc3 (2026-06-01)
+Creación de `GrafoLista` con listas de adyacencia implementando BFS, DFS, Floyd-Warshall, Prim y Kruskal.
+<img width="887" height="387" alt="image" src="https://github.com/user-attachments/assets/027fa5c6-7156-42ee-8c86-b788356bcaee" />
+
+
+- Tests totales: 87 | Fallos: 0
+- Densidad de errores = 0/87 = 0.00
+- Confiabilidad = 1 − 0.00 = 1.00
+- Completitud = 87/14 = 6.21
+
+### Iteration 15 — 820fc23 (2026-06-04)
+Creación de `MstSolver` para resolver el árbol de expansión mínima de metas en ambas representaciones.
+<img width="890" height="302" alt="image" src="https://github.com/user-attachments/assets/bac9fab4-50e9-4767-8dd2-c6a534336765" />
+
+
+- Tests totales: 98 | Fallos: 0
+- Densidad de errores = 0/98 = 0.00
+- Confiabilidad = 1 − 0.00 = 1.00
+- Completitud = 98/14 = 7.00
 
 ## Formulas
 - **Density of errors-failures** = total failures / total tests
