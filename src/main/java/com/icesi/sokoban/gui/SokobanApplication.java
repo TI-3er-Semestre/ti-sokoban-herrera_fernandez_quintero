@@ -62,17 +62,15 @@ public class SokobanApplication extends Application {
         if (primeraVez) {
             primeraVez = false;
 
-            // Cargar intro
             FXMLLoader loader = new FXMLLoader(
                     getClass().getResource("/com/icesi/sokoban/view/intro.fxml"));
             root = loader.load();
 
             IntroController introController = loader.getController();
-            scene = new Scene(root, 840, 560);
+            scene = new Scene(root);
             introController.attachKeyHandlers(scene);
 
         } else {
-            // Ir directo al menú principal
             root = FXMLLoader.load(
                     getClass().getResource("/com/icesi/sokoban/view/main-menu.fxml"));
             scene = new Scene(root);
@@ -81,6 +79,7 @@ public class SokobanApplication extends Application {
         primaryStage.setTitle("Sokoban — A Jungle Puzzle Adventure");
         primaryStage.setScene(scene);
         primaryStage.setResizable(false);
+        primaryStage.sizeToScene();
         primaryStage.show();
         primaryStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
             @Override

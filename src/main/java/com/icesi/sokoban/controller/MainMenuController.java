@@ -60,7 +60,10 @@ public class MainMenuController implements Initializable {
      */
     @FXML
     private void onRegistroClicked() throws IOException {
-        navegarA("/com/icesi/sokoban/view/player-registration.fxml");
+        Parent root = FXMLLoader.load(getClass().getResource(
+                "/com/icesi/sokoban/view/player-registration.fxml"));
+        Stage stage = (Stage) jugarButton.getScene().getWindow();
+        stage.setScene(new Scene(root));
     }
 
     /**

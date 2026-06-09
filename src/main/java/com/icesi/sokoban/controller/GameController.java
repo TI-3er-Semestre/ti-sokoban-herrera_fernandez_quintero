@@ -67,6 +67,11 @@ public class GameController implements Initializable {
         playerLabel.setText(activePlayer != null
                 ? "👤 " + activePlayer.getUsername() : "👤 Invitado");
 
+        // Aplicar la skin del avatar elegido en la pantalla de selección
+        if (activePlayer != null && activePlayer.getAvatar() != null) {
+            renderer.setSkin(activePlayer.getAvatar());
+        }
+
         currentLevel = cargarNivelDesdeJson(levelNumber);
         game.loadLevel(currentLevel);
 

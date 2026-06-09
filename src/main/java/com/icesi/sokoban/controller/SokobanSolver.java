@@ -15,65 +15,12 @@ import com.icesi.sokoban.structure.TranspositionTable;
  * de movimientos que lleva de la configuracion inicial a una donde todas
  * las cajas estan sobre metas.
  *
- * ─────────────────────────────────────────────────────────────────────
- *  MODELADO COMO GRAFO
- * ─────────────────────────────────────────────────────────────────────
- *  El problema se modela como un GRAFO DE ESTADOS:
+ * Algoritmos disponibles: BFS (solucion optima) y DFS (solucion rapida).
+ * El jugador elige cual usar desde el ChoiceBox en la pantalla de juego.
  *
- *    - Cada VERTICE es un estado del juego (posicion del jugador y de
- *      las cajas). Se representa con la clase EstadoSokoban.
- *
- *    - Cada ARISTA es un movimiento valido (UP, DOWN, LEFT, RIGHT) que
- *      transforma un estado en otro.
- *
- *    - Resolver el nivel = encontrar un CAMINO desde el estado inicial
- *      hasta cualquier estado ganador.
- *
- *  El grafo de estados NO se construye por adelantado (seria gigantesco).
- *  Se va generando "al vuelo": desde cada estado se calculan sus vecinos
- *  probando los cuatro movimientos.
- *
- * ─────────────────────────────────────────────────────────────────────
- *  BFS Y DFS (el jugador elige cual usar)
- * ─────────────────────────────────────────────────────────────────────
- * El solucionador puede recorrer el grafo de estados de dos maneras.
- * La unica diferencia entre ambas es la estructura que guarda la
- * frontera (los estados pendientes por explorar):
- *
- * BFS (busqueda en amplitut): usa una COLA (FIFO) -> CustomQueue.
- * Explora por niveles, asi que el primer estado ganador que encuentra
- * esta a la minima distancia del inicio. Por eso BFS garantiza la
- * solucion con el menor numero de movimientos.
- *
- * DFS (busqueda en profundidad): usa una PILA (LIFO) -> CustomStack.
- * Se hunde por un camino hasta el fondo antes de retroceder.
- * Encuentra una solucion valida (no necesariamente la mas corta).
- *
- * Simular movimientos, tabla de visitados, reconstruir el camino
- * es igual. Por eso ambos comparten el mismo metodo y solo cambia
- * el tipo de frontera, encapsulado en la clase Frontera.
- * ─────────────────────────────────────────────────────────────────────
- *  POR QUE LA TABLA HASH
- * ─────────────────────────────────────────────────────────────────────
- *  Durante la busqueda, el mismo estado puede alcanzarse por caminos
- *  distintos. Sin control de repetidos, BFS entraria en ciclos y
- *  exploraria infinitamente.
- *
- *  La TranspositionTable (tabla hash con encadenamiento) registra cada
- *  estado ya visitado. Preguntar "¿ya vi este estado?" cuesta O(1)
- *  promedio. Sin ella, la verificacion seria O(n) y la busqueda total
- *  pasaria de O(n) a O(n^2), volviendose impracticable.
- *
- * ─────────────────────────────────────────────────────────────────────
- *  COMPLEJIDAD
- * ─────────────────────────────────────────────────────────────────────
- *  Sea S el numero de estados alcanzables. BFS visita cada estado una
- *  vez y desde cada uno prueba 4 movimientos:
- *
- *    Temporal:  O(S)   (4 es constante; cada verificacion de repetido
- *                       es O(1) amortizado gracias a la tabla hash)
- *    Espacial:  O(S)   (la cola y la tabla hash pueden llegar a guardar
- *                       todos los estados alcanzables)
+ * COMPLEJIDAD (sea S = numero de estados alcanzables):
+ *   Temporal: O(S)  — cada estado se visita una vez; verificacion O(1) con hash
+ *   Espacial: O(S)  — cola/pila y tabla hash pueden guardar todos los estados
  */
 public class SokobanSolver {
 
@@ -101,21 +48,16 @@ public class SokobanSolver {
      */
     private static final int LIMITE_ESTADOS = 200_000;
 
-    /**
-     * Crea un solucionador para el nivel actualmente cargado en el juego.
-     *
-     * @param game juego con un nivel ya cargado
-     */
     public SokobanSolver(Game game) {
         if (game == null || game.getBoard() == null) {
-            throw new IllegalArgumentException(
-                    "El juego debe tener un nivel cargado");
+            throw new IllegalArgumentException("El juego debe tener un nivel cargado");
         }
         this.board = game.getBoard();
         this.estadoInicial = EstadoSokoban.desdeJuego(game);
     }
 
     /**
+     * Resuelve el nivel con BFS (version rapida sin parametro).
      * Resuelve el nivel con BFS sobre el espacio de estados.
      *
      */
@@ -124,6 +66,12 @@ public class SokobanSolver {
     }
 
     /**
+     * Resuelve el nivel con el algoritmo elegido (BFS o DFS).
+     * Lo unico que cambia es la estructura de la frontera.
+     *
+     * @param algoritmo BFS o DFS
+     */
+    public CustomLinkedList<Direction> resolver(Algoritmo algoritmo) {
      * Resuelve el nivel recorriendo el espacio de estados con el
      * algoritmo elegido (BFS o DFS). Lo unico que cambia es la estructura
      * que guarda los estados pendientes, FIFO para cola y LIFO para pila.
@@ -156,6 +104,17 @@ public class SokobanSolver {
             return new CustomLinkedList<>();
         }
 
+        if (algoritmo == Algoritmo.DFS) {
+            return resolverDFS();
+        }
+        return resolverBFS();
+    }
+
+    // ─────────────────────────────────────────────────────────────────────
+    // BFS — busqueda en amplitud, garantiza solucion optima
+    // ─────────────────────────────────────────────────────────────────────
+    private CustomLinkedList<Direction> resolverBFS() {
+        CustomQueue<EstadoSokoban> frontera = new CustomQueue<>();
         // Cola con los estados pendientes por explorar
         CustomQueue<EstadoSokoban> frontera = new CustomQueue<>();
 
@@ -167,11 +126,11 @@ public class SokobanSolver {
         frontera.enqueue(estadoInicial);
         visitados.put(estadoInicial.toString(), new Rastro(null, null));
 
-        int estadosExplorados = 0;
+        int explorados = 0;
 
         while (!frontera.isEmpty()) {
             EstadoSokoban actual = frontera.dequeue();
-            estadosExplorados++;
+            if (++explorados > LIMITE_ESTADOS) return new CustomLinkedList<>();
 
             if (estadosExplorados > LIMITE_ESTADOS) {
                 //El espacio de busqueda es demaciado grande, abortar mision
@@ -250,27 +209,49 @@ public class SokobanSolver {
             // Probar los cuatro movimientos desde el estado actual.
             for (Direction dir : MOVIMIENTOS) {
                 EstadoSokoban vecino = simularMovimiento(actual, dir);
-
-                // Movimiento invalido: no genera estado nuevo.
-                if (vecino == null) {
-                    continue;
-                }
-
+                if (vecino == null) continue;
                 String clave = vecino.toString();
-
-                // Estado ya visitado: lo ignoramos para no ciclar.
-                if (visitados.containsKey(clave)) {
-                    continue;
-                }
-
-                // Registrar como se llego a este estado nuevo.
+                if (visitados.containsKey(clave)) continue;
                 visitados.put(clave, new Rastro(actual, dir));
+                if (vecino.esGanador(board)) return reconstruirCamino(vecino, visitados);
+                frontera.enqueue(vecino);
+            }
+        }
+        return new CustomLinkedList<>();
+    }
 
-                // ¿Es un estado ganador? Reconstruir y devolver el camino.
-                if (vecino.esGanador(board)) {
-                    return reconstruirCamino(vecino, visitados);
-                }
+    // ─────────────────────────────────────────────────────────────────────
+    // DFS — busqueda en profundidad, usa pila (CustomStack)
+    // ─────────────────────────────────────────────────────────────────────
+    private CustomLinkedList<Direction> resolverDFS() {
+        CustomStack<EstadoSokoban> frontera = new CustomStack<>();
+        TranspositionTable visitados = new TranspositionTable();
 
+        frontera.push(estadoInicial);
+        visitados.put(estadoInicial.toString(), new Rastro(null, null));
+
+        int explorados = 0;
+
+        while (!frontera.isEmpty()) {
+            EstadoSokoban actual = frontera.pop();
+            if (++explorados > LIMITE_ESTADOS) return new CustomLinkedList<>();
+
+            for (Direction dir : MOVIMIENTOS) {
+                EstadoSokoban vecino = simularMovimiento(actual, dir);
+                if (vecino == null) continue;
+                String clave = vecino.toString();
+                if (visitados.containsKey(clave)) continue;
+                visitados.put(clave, new Rastro(actual, dir));
+                if (vecino.esGanador(board)) return reconstruirCamino(vecino, visitados);
+                frontera.push(vecino);
+            }
+        }
+        return new CustomLinkedList<>();
+    }
+
+    // ─────────────────────────────────────────────────────────────────────
+    // Simulacion de movimiento — no toca el objeto Game
+    // ─────────────────────────────────────────────────────────────────────
                 // Estado nuevo no ganador: apilarlo para explorarlo luego.
                 frontera.push(vecino);
             }
@@ -294,8 +275,7 @@ public class SokobanSolver {
      * @return el estado resultante, o null si el movimiento es invalido
      */
     private EstadoSokoban simularMovimiento(EstadoSokoban estado, Direction dir) {
-        int dFila = 0;
-        int dCol = 0;
+        int dFila = 0, dCol = 0;
         switch (dir) {
             case UP:
                 dFila = -1;
@@ -316,24 +296,17 @@ public class SokobanSolver {
         int nuevaFilaJ = estado.getJugadorFila() + dFila;
         int nuevaColJ = estado.getJugadorColumna() + dCol;
 
-        // El jugador no puede salir del tablero ni entrar a un muro.
-        if (!board.isValidPosition(nuevaFilaJ, nuevaColJ)) {
-            return null;
-        }
-        if (board.isWall(nuevaFilaJ, nuevaColJ)) {
-            return null;
-        }
+        if (!board.isValidPosition(nuevaFilaJ, nuevaColJ)) return null;
+        if (board.isWall(nuevaFilaJ, nuevaColJ)) return null;
 
-        // Copiar las posiciones de las cajas (estado nuevo independiente).
         int n = estado.cantidadCajas();
         int[] cajasFila = new int[n];
-        int[] cajasCol = new int[n];
+        int[] cajasCol  = new int[n];
         for (int i = 0; i < n; i++) {
             cajasFila[i] = estado.getCajaFila(i);
-            cajasCol[i] = estado.getCajaColumna(i);
+            cajasCol[i]  = estado.getCajaColumna(i);
         }
 
-        // ¿Hay una caja en la celda a la que entra el jugador?
         int indiceCaja = -1;
         for (int i = 0; i < n; i++) {
             if (cajasFila[i] == nuevaFilaJ && cajasCol[i] == nuevaColJ) {
@@ -343,30 +316,21 @@ public class SokobanSolver {
         }
 
         if (indiceCaja != -1) {
-            // Hay caja: intentar empujarla una celda mas en la misma direccion.
             int nuevaFilaC = nuevaFilaJ + dFila;
-            int nuevaColC = nuevaColJ + dCol;
-
-            if (!board.isValidPosition(nuevaFilaC, nuevaColC)) {
-                return null;
-            }
-            if (board.isWall(nuevaFilaC, nuevaColC)) {
-                return null;
-            }
-            // Detras de la caja no puede haber otra caja.
-            if (estado.hayCaja(nuevaFilaC, nuevaColC)) {
-                return null;
-            }
-
-            // Empuje valido: mover la caja.
+            int nuevaColC  = nuevaColJ  + dCol;
+            if (!board.isValidPosition(nuevaFilaC, nuevaColC)) return null;
+            if (board.isWall(nuevaFilaC, nuevaColC)) return null;
+            if (estado.hayCaja(nuevaFilaC, nuevaColC)) return null;
             cajasFila[indiceCaja] = nuevaFilaC;
-            cajasCol[indiceCaja] = nuevaColC;
+            cajasCol[indiceCaja]  = nuevaColC;
         }
 
-        // El jugador avanza a la nueva celda.
         return new EstadoSokoban(nuevaFilaJ, nuevaColJ, cajasFila, cajasCol);
     }
 
+    // ─────────────────────────────────────────────────────────────────────
+    // Reconstruccion del camino desde el estado ganador hacia el inicial
+    // ─────────────────────────────────────────────────────────────────────
     /**
      * Reconstruye la secuencia de movimientos desde el estado inicial
      * hasta el estado ganador, recorriendo los rastros hacia atras.
@@ -381,21 +345,16 @@ public class SokobanSolver {
     private CustomLinkedList<Direction> reconstruirCamino(
             EstadoSokoban estadoFinal, TranspositionTable visitados) {
 
-        // Recolectar los movimientos yendo del final hacia el inicio.
         CustomLinkedList<Direction> alReves = new CustomLinkedList<>();
-
         EstadoSokoban actual = estadoFinal;
+
         while (true) {
             Rastro rastro = (Rastro) visitados.get(actual.toString());
-            if (rastro == null || rastro.movimiento == null) {
-                // Llegamos al estado inicial (no tiene rastro de movimiento).
-                break;
-            }
+            if (rastro == null || rastro.movimiento == null) break;
             alReves.add(rastro.movimiento);
             actual = rastro.estadoAnterior;
         }
 
-        // Invertir para obtener el orden inicio -> final.
         CustomLinkedList<Direction> camino = new CustomLinkedList<>();
         for (int i = alReves.size() - 1; i >= 0; i--) {
             camino.add(alReves.get(i));
@@ -403,18 +362,13 @@ public class SokobanSolver {
         return camino;
     }
 
-    /**
-     * Registro de "de donde vino" un estado durante la busqueda.
-     * Guarda el estado anterior y el movimiento que llevo hasta el
-     * estado actual. Sirve para reconstruir la solucion al final.
-     */
     private static class Rastro {
         private final EstadoSokoban estadoAnterior;
         private final Direction movimiento;
 
         Rastro(EstadoSokoban estadoAnterior, Direction movimiento) {
             this.estadoAnterior = estadoAnterior;
-            this.movimiento = movimiento;
+            this.movimiento     = movimiento;
         }
     }
 }

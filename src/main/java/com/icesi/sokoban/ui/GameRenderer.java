@@ -18,15 +18,12 @@ public class GameRenderer {
 
     private final Canvas canvas;
 
-    // Sprites del jugador
     private Image spriteDown, spriteUp, spriteLeft, spriteRight;
     private boolean spritesLoaded = false;
 
-    // Fondos por nivel — se cargan independientemente del jaguar
     private Image bgLevel1, bgLevel2, bgLevel3;
     private boolean bgsLoaded = false;
 
-    // Tile de pared (jaguar)
     private Image wallTile;
     private boolean wallTileLoaded = false;
 
@@ -37,44 +34,98 @@ public class GameRenderer {
     private static final Color C_BOX_OG = Color.web("#81b29a");
     private static final Color C_GOAL   = Color.web("#c77dff");
 
+    private static final String BASE = "/com/icesi/sokoban/sprites/";
+
     public GameRenderer(Canvas canvas) {
         this.canvas = canvas;
-        cargarSprites();
+        cargarSprites("Mage");
         cargarFondos();
         cargarJaguar();
     }
 
     // ─────────────────────────────────────────────────────────────────────
-    // Carga de recursos — cada uno en su propio try/catch
+    // setSkin() — cambia los sprites al personaje elegido
+    // Nombres exactos según los archivos en el proyecto
     // ─────────────────────────────────────────────────────────────────────
+    public void setSkin(String skinName) {
+        if (skinName == null) return;
+        cargarSprites(skinName);
+    }
 
-    private void cargarSprites() {
+    private void cargarSprites(String skinName) {
+        String down, up, left, right;
+
+        switch (skinName) {
+            case "Ingrid":
+                down  = BASE + "Personajes/Ingrid/Ingrid_down.jpg";
+                up    = BASE + "Personajes/Ingrid/Ingrid_up.jpeg";
+                left  = BASE + "Personajes/Ingrid/Ingrid_left.jpg";
+                right = BASE + "Personajes/Ingrid/Ingrid_Right.jpg";
+                break;
+            case "Robot":
+                down  = BASE + "Personajes/Robot/Robot_down.jpg";
+                up    = BASE + "Personajes/Robot/Robot_up.jpg";
+                left  = BASE + "Personajes/Robot/Robot_left.jpg";
+                right = BASE + "Personajes/Robot/Robot_right.jpg";
+                break;
+            case "Zorro":
+                down  = BASE + "Personajes/Zorro/Zorro_down.jpg";
+                up    = BASE + "Personajes/Zorro/Zorro_up.jpg";
+                left  = BASE + "Personajes/Zorro/Zorro_left.jpg";
+                right = BASE + "Personajes/Zorro/Zorro_right.jpg";
+                break;
+            default: // Mage
+                down  = BASE + "Personajes/Mage/player_down.png";
+                up    = BASE + "Personajes/Mage/player_up.png";
+                left  = BASE + "Personajes/Mage/player_left.png";
+                right = BASE + "Personajes/Mage/player_right.png";
+                break;
+        }
+
         try {
-            String base = "/com/icesi/sokoban/sprites/";
-            spriteDown  = new Image(getClass().getResourceAsStream(base + "player_down.png"));
-            spriteUp    = new Image(getClass().getResourceAsStream(base + "player_up.png"));
-            spriteLeft  = new Image(getClass().getResourceAsStream(base + "player_left.png"));
-            spriteRight = new Image(getClass().getResourceAsStream(base + "player_right.png"));
+            Image d = cargarImagen(down);
+            Image u = cargarImagen(up);
+            Image l = cargarImagen(left);
+            Image r = cargarImagen(right);
+
+            if (d == null || u == null || l == null || r == null) {
+                System.err.println("[GameRenderer] Sprite no encontrado para skin: " + skinName);
+                spritesLoaded = false;
+                return;
+            }
+            spriteDown  = d;
+            spriteUp    = u;
+            spriteLeft  = l;
+            spriteRight = r;
             spritesLoaded = true;
+            System.out.println("[GameRenderer] Skin cargada: " + skinName);
         } catch (Exception e) {
+            System.err.println("[GameRenderer] Error cargando skin " + skinName + ": " + e.getMessage());
             spritesLoaded = false;
+        }
+    }
+
+    private Image cargarImagen(String path) {
+        try {
+            var stream = getClass().getResourceAsStream(path);
+            if (stream == null) {
+                System.err.println("[GameRenderer] No encontrado: " + path);
+                return null;
+            }
+            Image img = new Image(stream);
+            return img.isError() ? null : img;
+        } catch (Exception e) {
+            return null;
         }
     }
 
     private void cargarFondos() {
         try {
-            String base = "/com/icesi/sokoban/sprites/";
-            Image b1 = new Image(getClass().getResourceAsStream(base + "bg_level1.png"));
-            Image b2 = new Image(getClass().getResourceAsStream(base + "bg_level2.png"));
-            Image b3 = new Image(getClass().getResourceAsStream(base + "bg_level3.png"));
-            // Verificar que se cargaron correctamente
-            if (b1.isError() || b2.isError() || b3.isError()) {
-                bgsLoaded = false;
-                return;
-            }
-            bgLevel1 = b1;
-            bgLevel2 = b2;
-            bgLevel3 = b3;
+            Image b1 = new Image(getClass().getResourceAsStream(BASE + "Level/bg_level1.png"));
+            Image b2 = new Image(getClass().getResourceAsStream(BASE + "Level/bg_level2.png"));
+            Image b3 = new Image(getClass().getResourceAsStream(BASE + "Level/bg_level3.png"));
+            if (b1.isError() || b2.isError() || b3.isError()) { bgsLoaded = false; return; }
+            bgLevel1 = b1; bgLevel2 = b2; bgLevel3 = b3;
             bgsLoaded = true;
         } catch (Exception e) {
             bgsLoaded = false;
@@ -83,20 +134,12 @@ public class GameRenderer {
 
     private void cargarJaguar() {
         try {
-            String base = "/com/icesi/sokoban/sprites/";
-            Image w = new Image(getClass().getResourceAsStream(base + "block_00.jpg"));
-            if (!w.isError()) {
-                wallTile = w;
-                wallTileLoaded = true;
-            }
+            Image w = new Image(getClass().getResourceAsStream(BASE + "blocks/block_00.jpg"));
+            if (!w.isError()) { wallTile = w; wallTileLoaded = true; }
         } catch (Exception e) {
             wallTileLoaded = false;
         }
     }
-
-    // ─────────────────────────────────────────────────────────────────────
-    // API pública
-    // ─────────────────────────────────────────────────────────────────────
 
     public void setLastDirection(Direction direction) {
         if (direction != null) this.lastDirection = direction;
@@ -111,10 +154,6 @@ public class GameRenderer {
         canvas.setHeight(board.getHeight() * TILE_SIZE);
     }
 
-    // ─────────────────────────────────────────────────────────────────────
-    // Render principal
-    // ─────────────────────────────────────────────────────────────────────
-
     public void render(Game game) {
         GraphicsContext gc = canvas.getGraphicsContext2D();
         Board board = game.getBoard();
@@ -125,28 +164,23 @@ public class GameRenderer {
             return;
         }
 
-        // 1. Fondo del nivel
         dibujarFondo(gc);
 
-        // 2. Tablero
         for (int row = 0; row < board.getHeight(); row++) {
             for (int col = 0; col < board.getWidth(); col++) {
                 double x = col * TILE_SIZE;
                 double y = row * TILE_SIZE;
                 if (board.isWall(row, col))      drawWall(gc, x, y);
                 else if (board.isGoal(row, col)) drawGoal(gc, x, y);
-                // piso = transparente, se ve el fondo
             }
         }
 
-        // 3. Cajas
         for (int i = 0; i < game.getBoxes().size(); i++) {
             Box box = game.getBoxes().get(i);
             Position p = box.getPosition();
             drawBox(gc, p.getColumn() * TILE_SIZE, p.getRow() * TILE_SIZE, box.isOnGoal());
         }
 
-        // 4. Jugador
         Player player = game.getPlayer();
         if (player != null && player.getPosition() != null) {
             Position p = player.getPosition();
@@ -154,28 +188,16 @@ public class GameRenderer {
         }
     }
 
-    // ─────────────────────────────────────────────────────────────────────
-    // Fondo
-    // ─────────────────────────────────────────────────────────────────────
-
     private void dibujarFondo(GraphicsContext gc) {
-        double w = canvas.getWidth();
-        double h = canvas.getHeight();
-
+        double w = canvas.getWidth(), h = canvas.getHeight();
         if (bgsLoaded) {
-            Image bg = currentLevel == 2 ? bgLevel2
-                    : currentLevel == 3 ? bgLevel3
-                      : bgLevel1;
+            Image bg = currentLevel == 2 ? bgLevel2 : currentLevel == 3 ? bgLevel3 : bgLevel1;
             gc.drawImage(bg, 0, 0, w, h);
         } else {
             gc.setFill(Color.web("#0f0e17"));
             gc.fillRect(0, 0, w, h);
         }
     }
-
-    // ─────────────────────────────────────────────────────────────────────
-    // Primitivas
-    // ─────────────────────────────────────────────────────────────────────
 
     private void drawWall(GraphicsContext gc, double x, double y) {
         if (wallTileLoaded) {
@@ -187,9 +209,7 @@ public class GameRenderer {
     }
 
     private void drawGoal(GraphicsContext gc, double x, double y) {
-        double cx = x + TILE_SIZE / 2.0;
-        double cy = y + TILE_SIZE / 2.0;
-        double r  = TILE_SIZE * 0.28;
+        double cx = x + TILE_SIZE / 2.0, cy = y + TILE_SIZE / 2.0, r = TILE_SIZE * 0.28;
         gc.setFill(C_GOAL);
         gc.fillOval(cx - r, cy - r, r * 2, r * 2);
         gc.setStroke(Color.web("#ffffff", 0.3));
@@ -215,7 +235,8 @@ public class GameRenderer {
                 case RIGHT: sprite = spriteRight; break;
                 default:    sprite = spriteDown;  break;
             }
-            gc.drawImage(sprite, x + 2, y + 2, TILE_SIZE - 4, TILE_SIZE - 4);
+            // Dibuja el sprite ocupando el tile completo
+            gc.drawImage(sprite, x, y, TILE_SIZE, TILE_SIZE);
         } else {
             gc.setFill(Color.web("#f2cc8f"));
             gc.fillOval(x + 15, y + 10, 30, 30);
