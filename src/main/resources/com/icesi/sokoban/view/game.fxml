@@ -6,6 +6,7 @@
 <?import javafx.scene.canvas.Canvas?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ChoiceBox?>
 
 <!--
     VISTA — game.fxml
@@ -51,6 +52,18 @@
         <Button fx:id="undoButton"
                 text="Deshacer"
                 onAction="#onUndoClicked"
+                style="-fx-font-size: 12px;"/>
+    </HBox>
+    <HBox fx:id="solverBox"
+          visible="false" managed="false"
+          style="-fx-background-color: #11101e; -fx-padding: 6 14 6 14;"
+          spacing="10" alignment="CENTER_LEFT">
+        <Label text="Algoritmo:"
+               style="-fx-font-size: 13px; -fx-text-fill: #fffffe;"/>
+        <ChoiceBox fx:id="algorithmChoice"/>
+        <Button fx:id="solveButton"
+                text="Resolver"
+                onAction="#onSolveClicked"
                 style="-fx-font-size: 12px;"/>
     </HBox>
 

@@ -1,13 +1,16 @@
 package com.icesi.sokoban.structure;
 
+import java.io.Serializable;
 
-public class CustomQueue<T> {
+public class CustomQueue<T> implements Serializable {
+    private static final long serialVersionUID = 1L;
     private Node<T> front;
     private Node<T> rear;
     private int size;
 
 
-    private static class Node<T> {
+    private static class Node<T> implements Serializable {
+        private static final long serialVersionUID = 1L;
         T data;
         Node<T> next;
 

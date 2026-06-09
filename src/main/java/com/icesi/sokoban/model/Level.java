@@ -1,6 +1,7 @@
 package com.icesi.sokoban.model;
 
 import com.icesi.sokoban.structure.CustomLinkedList;
+import java.io.Serializable;
 
 /**
  * Representa un nivel del juego Sokoban.
@@ -29,12 +30,12 @@ import com.icesi.sokoban.structure.CustomLinkedList;
  *   1 = WALL    → '#'
  *   2 = BOX     → '$'
  *   3 = TARGET  → '.'
- *   4 = PLAYER  → '@' (también fija playerStart)
- *   5 = BOX_ON_TARGET → '*'
- *   6 = PLAYER_ON_TARGET → '+'
+ *   4 = PLAYER  → ' ' (piso; la posicion se guarda en playerStart)
+ *   5 = BOX_ON_TARGET → '*' (y registra la meta)
+ *   6 = PLAYER_ON_TARGET → '.' (meta; la posicion se guarda en playerStart)
  */
-public class Level {
-
+public class Level implements Serializable{
+    private static final long serialVersionUID = 1L;
     private int levelId;
     private String name;
     private Board board;
@@ -96,14 +97,27 @@ public class Level {
                     case 2: cell = '$'; break;  // BOX
                     case 3:                     // TARGET
                         cell = '.';
-                        board.addGoal(new Position(r, c));
+                        if (!board.isGoal(r,c)){
+                            board.addGoal(new Position(r,c));
+                        }
                         break;
                     case 4:                     // PLAYER
-                        cell = '@';
+                        cell = ' ';
                         this.playerStartPosition = new Position(r, c);
                         break;
-                    case 5: cell = '*'; break;  // BOX_ON_TARGET
-                    case 6: cell = '+'; break;  // PLAYER_ON_TARGET
+                    case 5:  // BOX_ON_TARGET
+                        cell = '*';
+                        if (!board.isGoal(r,c)){
+                            board.addGoal(new Position(r,c));
+                        }
+                    break;
+                    case 6:  // PLAYER_ON_TARGET
+                        cell = '.';
+                        this.playerStartPosition = new Position(r,c);
+                        if (!board.isGoal(r,c)){
+                            board.addGoal(new Position(r,c));
+                        }
+                        break;
                     default: cell = ' '; break; // FLOOR
                 }
                 board.setCell(r, c, cell);
