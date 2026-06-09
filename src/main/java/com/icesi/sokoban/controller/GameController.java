@@ -70,6 +70,7 @@ public class GameController implements Initializable {
         currentLevel = cargarNivelDesdeJson(levelNumber);
         game.loadLevel(currentLevel);
 
+        renderer.setCurrentLevel(levelNumber);
         renderer.resizeToBoard(game.getBoard());
         renderer.render(game);
         updateLabels();
@@ -118,6 +119,7 @@ public class GameController implements Initializable {
         detenerCronometro();
         iniciarCronometro();
         if (renderer != null) {
+            renderer.setCurrentLevel(levelNumber);
             renderer.resizeToBoard(game.getBoard());
             renderer.render(game);
             updateLabels();

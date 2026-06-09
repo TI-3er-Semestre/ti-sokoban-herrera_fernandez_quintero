@@ -12,56 +12,42 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
 
-/**
- * UI — GameRenderer
- *
- * Dibuja el estado del juego sobre el Canvas.
- * Usa sprites PNG para el jugador — uno por dirección.
- * El sprite cambia según la última dirección de movimiento.
- *
- * Los sprites viven en:
- *   src/main/resources/com/icesi/sokoban/sprites/
- *     player_down.png, player_up.png, player_left.png, player_right.png
- */
 public class GameRenderer {
 
     public static final int TILE_SIZE = 60;
 
     private final Canvas canvas;
 
-    // Sprites del jugador — uno por dirección
-    private Image spriteDown;
-    private Image spriteUp;
-    private Image spriteLeft;
-    private Image spriteRight;
+    // Sprites del jugador
+    private Image spriteDown, spriteUp, spriteLeft, spriteRight;
     private boolean spritesLoaded = false;
 
-    // Última dirección — determina qué sprite mostrar
+    // Fondos por nivel — se cargan independientemente del jaguar
+    private Image bgLevel1, bgLevel2, bgLevel3;
+    private boolean bgsLoaded = false;
+
+    // Tile de pared (jaguar)
+    private Image wallTile;
+    private boolean wallTileLoaded = false;
+
+    private int currentLevel = 1;
     private Direction lastDirection = Direction.DOWN;
 
-    // Paleta de colores para elementos no-sprite
-    private static final Color C_BG     = Color.web("#0f0e17");
-    private static final Color C_FLOOR  = Color.web("#1a1a2e");
-    private static final Color C_WALL   = Color.web("#4a4e69");
-    private static final Color C_GOAL   = Color.web("#c77dff");
     private static final Color C_BOX    = Color.web("#e07a5f");
     private static final Color C_BOX_OG = Color.web("#81b29a");
-    private static final Color C_PLAYER = Color.web("#f2cc8f");
+    private static final Color C_GOAL   = Color.web("#c77dff");
 
     public GameRenderer(Canvas canvas) {
         this.canvas = canvas;
         cargarSprites();
+        cargarFondos();
+        cargarJaguar();
     }
 
     // ─────────────────────────────────────────────────────────────────────
-    // Carga de sprites
+    // Carga de recursos — cada uno en su propio try/catch
     // ─────────────────────────────────────────────────────────────────────
 
-    /**
-     * Carga los 4 sprites del jugador desde resources.
-     * Si alguno falla, spritesLoaded queda false y se usa el dibujo
-     * geométrico como fallback — el juego nunca crashea por un sprite.
-     */
     private void cargarSprites() {
         try {
             String base = "/com/icesi/sokoban/sprites/";
@@ -71,61 +57,96 @@ public class GameRenderer {
             spriteRight = new Image(getClass().getResourceAsStream(base + "player_right.png"));
             spritesLoaded = true;
         } catch (Exception e) {
-            System.err.println("No se pudieron cargar los sprites: " + e.getMessage());
             spritesLoaded = false;
         }
     }
 
-    /**
-     * Actualiza la dirección del último movimiento.
-     * GameController llama esto antes de render() en cada tecla.
-     */
+    private void cargarFondos() {
+        try {
+            String base = "/com/icesi/sokoban/sprites/";
+            Image b1 = new Image(getClass().getResourceAsStream(base + "bg_level1.png"));
+            Image b2 = new Image(getClass().getResourceAsStream(base + "bg_level2.png"));
+            Image b3 = new Image(getClass().getResourceAsStream(base + "bg_level3.png"));
+            // Verificar que se cargaron correctamente
+            if (b1.isError() || b2.isError() || b3.isError()) {
+                bgsLoaded = false;
+                return;
+            }
+            bgLevel1 = b1;
+            bgLevel2 = b2;
+            bgLevel3 = b3;
+            bgsLoaded = true;
+        } catch (Exception e) {
+            bgsLoaded = false;
+        }
+    }
+
+    private void cargarJaguar() {
+        try {
+            String base = "/com/icesi/sokoban/sprites/";
+            Image w = new Image(getClass().getResourceAsStream(base + "block_00.jpg"));
+            if (!w.isError()) {
+                wallTile = w;
+                wallTileLoaded = true;
+            }
+        } catch (Exception e) {
+            wallTileLoaded = false;
+        }
+    }
+
+    // ─────────────────────────────────────────────────────────────────────
+    // API pública
+    // ─────────────────────────────────────────────────────────────────────
+
     public void setLastDirection(Direction direction) {
         if (direction != null) this.lastDirection = direction;
     }
 
-    // ─────────────────────────────────────────────────────────────────────
-    // Render principal
-    // ─────────────────────────────────────────────────────────────────────
+    public void setCurrentLevel(int level) {
+        this.currentLevel = level;
+    }
 
     public void resizeToBoard(Board board) {
         canvas.setWidth(board.getWidth() * TILE_SIZE);
         canvas.setHeight(board.getHeight() * TILE_SIZE);
     }
 
+    // ─────────────────────────────────────────────────────────────────────
+    // Render principal
+    // ─────────────────────────────────────────────────────────────────────
+
     public void render(Game game) {
         GraphicsContext gc = canvas.getGraphicsContext2D();
         Board board = game.getBoard();
 
         if (board == null) {
-            gc.setFill(C_BG);
+            gc.setFill(Color.web("#0f0e17"));
             gc.fillRect(0, 0, canvas.getWidth(), canvas.getHeight());
             return;
         }
 
-        // Fondo
-        gc.setFill(C_BG);
-        gc.fillRect(0, 0, canvas.getWidth(), canvas.getHeight());
+        // 1. Fondo del nivel
+        dibujarFondo(gc);
 
-        // Tablero: muros, metas, piso
+        // 2. Tablero
         for (int row = 0; row < board.getHeight(); row++) {
             for (int col = 0; col < board.getWidth(); col++) {
                 double x = col * TILE_SIZE;
                 double y = row * TILE_SIZE;
-                if (board.isWall(row, col))       drawWall(gc, x, y);
-                else if (board.isGoal(row, col))  drawGoal(gc, x, y);
-                else                              drawFloor(gc, x, y);
+                if (board.isWall(row, col))      drawWall(gc, x, y);
+                else if (board.isGoal(row, col)) drawGoal(gc, x, y);
+                // piso = transparente, se ve el fondo
             }
         }
 
-        // Cajas
+        // 3. Cajas
         for (int i = 0; i < game.getBoxes().size(); i++) {
             Box box = game.getBoxes().get(i);
             Position p = box.getPosition();
             drawBox(gc, p.getColumn() * TILE_SIZE, p.getRow() * TILE_SIZE, box.isOnGoal());
         }
 
-        // Jugador con sprite
+        // 4. Jugador
         Player player = game.getPlayer();
         if (player != null && player.getPosition() != null) {
             Position p = player.getPosition();
@@ -134,65 +155,70 @@ public class GameRenderer {
     }
 
     // ─────────────────────────────────────────────────────────────────────
-    // Dibujo del jugador
+    // Fondo
     // ─────────────────────────────────────────────────────────────────────
 
-    private void drawPlayer(GraphicsContext gc, double x, double y) {
-        if (spritesLoaded) {
-            Image sprite = getSpriteForDirection(lastDirection);
-            // Centrar el sprite en la celda con un pequeño margen
-            double margin = 2;
-            gc.drawImage(sprite,
-                    x + margin,
-                    y + margin,
-                    TILE_SIZE - margin * 2,
-                    TILE_SIZE - margin * 2);
+    private void dibujarFondo(GraphicsContext gc) {
+        double w = canvas.getWidth();
+        double h = canvas.getHeight();
+
+        if (bgsLoaded) {
+            Image bg = currentLevel == 2 ? bgLevel2
+                    : currentLevel == 3 ? bgLevel3
+                      : bgLevel1;
+            gc.drawImage(bg, 0, 0, w, h);
         } else {
-            // Fallback geométrico si no hay sprites
-            double cx = x + TILE_SIZE / 2.0;
-            double headR = TILE_SIZE * 0.18;
-            gc.setFill(C_PLAYER);
-            gc.fillRoundRect(x + 16, y + 26, TILE_SIZE - 32, TILE_SIZE - 32, 6, 6);
-            gc.fillOval(cx - headR, y + 10, headR * 2, headR * 2);
-        }
-    }
-
-    private Image getSpriteForDirection(Direction dir) {
-        switch (dir) {
-            case UP:    return spriteUp;
-            case DOWN:  return spriteDown;
-            case LEFT:  return spriteLeft;
-            case RIGHT: return spriteRight;
-            default:    return spriteDown;
+            gc.setFill(Color.web("#0f0e17"));
+            gc.fillRect(0, 0, w, h);
         }
     }
 
     // ─────────────────────────────────────────────────────────────────────
-    // Primitivas de dibujo
+    // Primitivas
     // ─────────────────────────────────────────────────────────────────────
-
-    private void drawFloor(GraphicsContext gc, double x, double y) {
-        gc.setFill(C_FLOOR);
-        gc.fillRect(x, y, TILE_SIZE, TILE_SIZE);
-    }
 
     private void drawWall(GraphicsContext gc, double x, double y) {
-        gc.setFill(C_WALL);
-        gc.fillRoundRect(x + 1, y + 1, TILE_SIZE - 2, TILE_SIZE - 2, 6, 6);
+        if (wallTileLoaded) {
+            gc.drawImage(wallTile, x, y, TILE_SIZE, TILE_SIZE);
+        } else {
+            gc.setFill(Color.web("#4a4e69"));
+            gc.fillRoundRect(x + 1, y + 1, TILE_SIZE - 2, TILE_SIZE - 2, 8, 8);
+        }
     }
 
     private void drawGoal(GraphicsContext gc, double x, double y) {
-        drawFloor(gc, x, y);
         double cx = x + TILE_SIZE / 2.0;
         double cy = y + TILE_SIZE / 2.0;
         double r  = TILE_SIZE * 0.28;
         gc.setFill(C_GOAL);
         gc.fillOval(cx - r, cy - r, r * 2, r * 2);
+        gc.setStroke(Color.web("#ffffff", 0.3));
+        gc.setLineWidth(1);
+        gc.strokeOval(cx - r, cy - r, r * 2, r * 2);
     }
 
     private void drawBox(GraphicsContext gc, double x, double y, boolean onGoal) {
-        double m = 6;
+        double m = 5;
         gc.setFill(onGoal ? C_BOX_OG : C_BOX);
-        gc.fillRoundRect(x + m, y + m, TILE_SIZE - m * 2, TILE_SIZE - m * 2, 8, 8);
+        gc.fillRoundRect(x + m, y + m, TILE_SIZE - m * 2, TILE_SIZE - m * 2, 10, 10);
+        gc.setStroke(onGoal ? Color.web("#4a7a5a") : Color.web("#8a3a2a"));
+        gc.setLineWidth(2);
+        gc.strokeRoundRect(x + m, y + m, TILE_SIZE - m * 2, TILE_SIZE - m * 2, 10, 10);
+    }
+
+    private void drawPlayer(GraphicsContext gc, double x, double y) {
+        if (spritesLoaded) {
+            Image sprite;
+            switch (lastDirection) {
+                case UP:    sprite = spriteUp;    break;
+                case LEFT:  sprite = spriteLeft;  break;
+                case RIGHT: sprite = spriteRight; break;
+                default:    sprite = spriteDown;  break;
+            }
+            gc.drawImage(sprite, x + 2, y + 2, TILE_SIZE - 4, TILE_SIZE - 4);
+        } else {
+            gc.setFill(Color.web("#f2cc8f"));
+            gc.fillOval(x + 15, y + 10, 30, 30);
+        }
     }
 }
