@@ -25,7 +25,9 @@ import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.control.ChoiceBox;
+import javafx.scene.control.ProgressBar;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.StackPane;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -46,10 +48,13 @@ public class GameController implements Initializable {
     @FXML private HBox solverBox;
     @FXML private ChoiceBox<SokobanSolver.Algoritmo> algorithmChoice;
     @FXML private Button solveButton;
+    @FXML private StackPane pauseOverlay;
+    @FXML private ProgressBar timerBar;
 
     private final Game game = new Game();
     private GameRenderer renderer;
     private boolean gameEnded = false;
+    private boolean isPaused  = false;
     private int levelNumber = 1;
     private Level currentLevel;
     private boolean animating = false;
@@ -62,12 +67,13 @@ public class GameController implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         renderer = new GameRenderer(gameCanvas);
+        renderer.setGameRef(game);
 
         Player activePlayer = PlayerRegistry.getInstance().getActivePlayer();
         playerLabel.setText(activePlayer != null
                 ? "👤 " + activePlayer.getUsername() : "👤 Invitado");
 
-        // Aplicar la skin del avatar elegido en la pantalla de selección
+        // Aplicar la skin del avatar elegido
         if (activePlayer != null && activePlayer.getAvatar() != null) {
             renderer.setSkin(activePlayer.getAvatar());
         }
@@ -76,6 +82,8 @@ public class GameController implements Initializable {
         game.loadLevel(currentLevel);
 
         renderer.setCurrentLevel(levelNumber);
+        if (currentLevel != null && currentLevel.getWallTile() != null)
+            renderer.setWallTile(currentLevel.getWallTile());
         renderer.resizeToBoard(game.getBoard());
         renderer.render(game);
         updateLabels();
@@ -91,11 +99,37 @@ public class GameController implements Initializable {
     // ─────────────────────────────────────────────────────────────────────
     private void iniciarCronometro() {
         segundos = 0;
+        int timeLimit = currentLevel != null ? currentLevel.getTimeLimit() : 0;
+
+        // Mostrar barra solo si el nivel tiene límite de tiempo
+        if (timerBar != null) {
+            timerBar.setVisible(timeLimit > 0);
+            timerBar.setManaged(timeLimit > 0);
+            timerBar.setProgress(1.0);
+            timerBar.setStyle("-fx-accent: #3da94f;");
+        }
+
         cronometro = new Timeline(new KeyFrame(Duration.seconds(1), e -> {
             segundos++;
             timerLabel.setText("⏱ " + formatTime(segundos));
-            int timeLimit = currentLevel != null ? currentLevel.getTimeLimit() : 0;
-            if (timeLimit > 0 && segundos >= timeLimit && !gameEnded) {
+            int limit = currentLevel != null ? currentLevel.getTimeLimit() : 0;
+
+            // Actualizar barra de tiempo
+            if (timerBar != null && limit > 0) {
+                double progreso = 1.0 - ((double) segundos / limit);
+                timerBar.setProgress(Math.max(0, progreso));
+
+                // Color: verde → amarillo → rojo
+                if (progreso > 0.5) {
+                    timerBar.setStyle("-fx-accent: #3da94f;");
+                } else if (progreso > 0.25) {
+                    timerBar.setStyle("-fx-accent: #f2cc8f;");
+                } else {
+                    timerBar.setStyle("-fx-accent: #ef4565;");
+                }
+            }
+
+            if (limit > 0 && segundos >= limit && !gameEnded) {
                 gameEnded = true;
                 detenerCronometro();
                 navegarAGameOver("⏰ ¡Se agotó el tiempo!");
@@ -125,6 +159,8 @@ public class GameController implements Initializable {
         iniciarCronometro();
         if (renderer != null) {
             renderer.setCurrentLevel(levelNumber);
+            if (currentLevel != null && currentLevel.getWallTile() != null)
+                renderer.setWallTile(currentLevel.getWallTile());
             renderer.resizeToBoard(game.getBoard());
             renderer.render(game);
             updateLabels();
@@ -140,7 +176,14 @@ public class GameController implements Initializable {
     // Teclado — actualiza sprite según dirección
     // ─────────────────────────────────────────────────────────────────────
     private void handleKey(KeyEvent event) {
-        if (gameEnded || animating) return;
+        // ESC siempre disponible para pausar/reanudar
+        if (event.getCode() == javafx.scene.input.KeyCode.ESCAPE) {
+            togglePausa();
+            event.consume();
+            return;
+        }
+
+        if (gameEnded || animating || isPaused) return;
 
         Direction dir = null;
         switch (event.getCode()) {
@@ -380,6 +423,55 @@ public class GameController implements Initializable {
         level.setPlayerStartPosition(new com.icesi.sokoban.model.Position(2, 1));
         level.setDifficulty("BASIC");
         return level;
+    }
+
+    // ─────────────────────────────────────────────────────────────────────
+    // Menú de pausa
+    // ─────────────────────────────────────────────────────────────────────
+
+    private void togglePausa() {
+        if (gameEnded) return;
+        isPaused = !isPaused;
+        pauseOverlay.setVisible(isPaused);
+        if (isPaused) detenerCronometro();
+        else          iniciarCronometro();
+    }
+
+    @FXML
+    private void onPausaClicked() {
+        togglePausa();
+    }
+
+    @FXML
+    private void onReanudarClicked() {
+        togglePausa();
+    }
+
+    @FXML
+    private void onReiniciarClicked() {
+        isPaused = false;
+        pauseOverlay.setVisible(false);
+        game.resetLevel();
+        gameEnded = false;
+        detenerCronometro();
+        iniciarCronometro();
+        renderer.render(game);
+        updateLabels();
+    }
+
+    @FXML
+    private void onVolverMenuClicked() {
+        isPaused = false;
+        pauseOverlay.setVisible(false);
+        detenerCronometro();
+        try {
+            javafx.scene.Parent root = FXMLLoader.load(
+                    getClass().getResource("/com/icesi/sokoban/view/main-menu.fxml"));
+            Stage stage = (Stage) gameCanvas.getScene().getWindow();
+            stage.setScene(new Scene(root));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     public static Game getActiveGame(){
