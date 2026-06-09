@@ -100,10 +100,13 @@ java -cp bin:lib/junit.jar org.junit.runner.JUnitCore test.GameTest
 - Confiabilidad = 1 - 0.00 = 1.00
 - Completitud = 98/14 = 1.00
 
+<img width="1906" height="698" alt="image" src="https://github.com/user-attachments/assets/1a003fd0-0e50-45d6-94d9-868b8c394870" />
+
 ### Iteration 5: [commit-sha]
-- Density of errors-failures = 
-- Reliability = 
-- Completeness = 
+- Density of errors-failures = 0 / 105 = 0.00
+- Reliability = 1 - (0 / 105) = 1.00
+- Completeness = 105 / 105 = 1.00
+  
 
 ### Iteration 6: f6e54fa
 - Tests totales: 0 | Fallos: 0 (Error de compilación)
