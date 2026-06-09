@@ -1,6 +1,7 @@
 package com.icesi.sokoban.model;
 
 import com.icesi.sokoban.structure.CustomLinkedList;
+import java.io.Serializable;
 
 /**
  * Representa un nivel del juego Sokoban.
@@ -29,17 +30,19 @@ import com.icesi.sokoban.structure.CustomLinkedList;
  *   1 = WALL    → '#'
  *   2 = BOX     → '$'
  *   3 = TARGET  → '.'
- *   4 = PLAYER  → '@' (también fija playerStart)
- *   5 = BOX_ON_TARGET → '*'
- *   6 = PLAYER_ON_TARGET → '+'
+ *   4 = PLAYER  → ' ' (piso; la posicion se guarda en playerStart)
+ *   5 = BOX_ON_TARGET → '*' (y registra la meta)
+ *   6 = PLAYER_ON_TARGET → '.' (meta; la posicion se guarda en playerStart)
  */
-public class Level {
-
+public class Level implements Serializable{
+    private static final long serialVersionUID = 1L;
     private int levelId;
     private String name;
     private Board board;
     private Position playerStartPosition;
     private String difficulty;
+    private int timeLimit; // segundos, 0 = sin límite
+    private String wallTile; // nombre del archivo de tile de muro
 
     public Level(int levelId, String name) {
         this.levelId = levelId;
@@ -63,6 +66,8 @@ public class Level {
         this.levelId   = parseInt(extractValue(json, "id"));
         this.name      = extractString(json, "name");
         this.difficulty = extractString(json, "difficulty");
+        this.timeLimit = parseInt(extractValue(json, "timeLimit"));
+        this.wallTile  = extractString(json, "wallTile");
 
         int rows = parseInt(extractValue(json, "rows"));
         int cols = parseInt(extractValue(json, "cols"));
@@ -76,18 +81,11 @@ public class Level {
         int playerCol = parseInt(extractValue(playerStartBlock, "col"));
         this.playerStartPosition = new Position(playerRow, playerCol);
 
-        // ── targets → metas del tablero ───────────────────────────────────
-        String targetsArray = extractArray(json, "targets");
-        CustomLinkedList<String> targetObjects = extractObjects(targetsArray);
-        for (int i = 0; i < targetObjects.size(); i++) {
-            String obj = targetObjects.get(i);
-            int r = parseInt(extractValue(obj, "row"));
-            int c = parseInt(extractValue(obj, "col"));
-            board.setCell(r, c, '.');
-            board.addGoal(new Position(r, c));
-        }
-
         // ── grid → rellena el tablero fila por fila ───────────────────────
+        // Nota: las metas (3) y cajas (2) se leen directamente del grid.
+        // No procesamos el array "targets" por separado porque el grid
+        // ya contiene toda la información y procesarlo dos veces
+        // duplicaría las goals en el Board.
         String gridArray = extractArray(json, "grid");
         CustomLinkedList<String> gridRows = extractArrayRows(gridArray);
 
@@ -101,14 +99,27 @@ public class Level {
                     case 2: cell = '$'; break;  // BOX
                     case 3:                     // TARGET
                         cell = '.';
-                        board.addGoal(new Position(r, c));
+                        if (!board.isGoal(r,c)){
+                            board.addGoal(new Position(r,c));
+                        }
                         break;
                     case 4:                     // PLAYER
-                        cell = '@';
+                        cell = ' ';
                         this.playerStartPosition = new Position(r, c);
                         break;
-                    case 5: cell = '*'; break;  // BOX_ON_TARGET
-                    case 6: cell = '+'; break;  // PLAYER_ON_TARGET
+                    case 5:  // BOX_ON_TARGET
+                        cell = '*';
+                        if (!board.isGoal(r,c)){
+                            board.addGoal(new Position(r,c));
+                        }
+                        break;
+                    case 6:  // PLAYER_ON_TARGET
+                        cell = '.';
+                        this.playerStartPosition = new Position(r,c);
+                        if (!board.isGoal(r,c)){
+                            board.addGoal(new Position(r,c));
+                        }
+                        break;
                     default: cell = ' '; break; // FLOOR
                 }
                 board.setCell(r, c, cell);
@@ -271,4 +282,10 @@ public class Level {
 
     public String getDifficulty() { return difficulty; }
     public void setDifficulty(String difficulty) { this.difficulty = difficulty; }
+
+    public int getTimeLimit() { return timeLimit; }
+    public void setTimeLimit(int timeLimit) { this.timeLimit = timeLimit; }
+
+    public String getWallTile() { return wallTile; }
+    public void setWallTile(String wallTile) { this.wallTile = wallTile; }
 }

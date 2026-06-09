@@ -1,10 +1,14 @@
 package com.icesi.sokoban.structure;
 
-public class CustomStack<T> {
+import java.io.Serializable;
+
+public class CustomStack<T> implements Serializable {
+    private static final long serialVersionUID = 1L;
     private Node<T> top;
     private int size;
 
-    private static class Node<T> {
+    private static class Node<T> implements Serializable {
+        private static final long serialVersionUID= 1L;
         T data;
         Node<T> next;
 

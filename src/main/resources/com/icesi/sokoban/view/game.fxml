@@ -2,58 +2,103 @@
 
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.Region?>
 <?import javafx.scene.canvas.Canvas?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ChoiceBox?>
+<?import javafx.scene.control.ProgressBar?>
 
-<!--
-    VISTA — game.fxml
+<StackPane xmlns="http://javafx.com/javafx"
+           xmlns:fx="http://javafx.com/fxml"
+           fx:controller="com.icesi.sokoban.controller.GameController">
 
-    Nodos referenciados por GameController (por fx:id):
-      #statusLabel        barra superior, instrucciones / estado
-      #playerLabel        nombre del jugador activo
-      #moveCounterLabel   contador de movimientos
-      #pushCounterLabel   contador de empujes
-      #gameCanvas         lienzo donde se dibuja el tablero
-      #undoButton         boton de deshacer
--->
+    <VBox fx:id="gameRoot"
+          style="-fx-background-color: #0f0e17;"
+          spacing="0">
 
-<VBox xmlns="http://javafx.com/javafx"
-      xmlns:fx="http://javafx.com/fxml"
-      fx:controller="com.icesi.sokoban.controller.GameController"
-      style="-fx-background-color: #0f0e17;"
-      spacing="0">
+        <HBox style="-fx-background-color: #16152a; -fx-padding: 8 14 8 14;"
+              spacing="20">
+            <Label fx:id="statusLabel"
+                   text="Flechas o WASD para mover · R para reiniciar · ESC para pausar"
+                   style="-fx-font-size: 13px; -fx-font-weight: bold; -fx-text-fill: #fffffe;"/>
+        </HBox>
 
-    <!-- Barra superior de estado -->
-    <HBox style="-fx-background-color: #16152a; -fx-padding: 8 14 8 14;"
-          spacing="20">
-        <Label fx:id="statusLabel"
-               text="Flechas o WASD para mover · R para reiniciar"
-               style="-fx-font-size: 14px; -fx-font-weight: bold; -fx-text-fill: #fffffe;"/>
-    </HBox>
+        <HBox style="-fx-background-color: #1a1a2e; -fx-padding: 6 14 6 14;"
+              spacing="20" alignment="CENTER_LEFT">
+            <Label fx:id="playerLabel" text="👤 Invitado"
+                   style="-fx-font-size: 13px; -fx-text-fill: #3da9fc;"/>
+            <Label fx:id="moveCounterLabel" text="👣 Mov: 0"
+                   style="-fx-font-size: 13px; -fx-text-fill: #f2cc8f;"/>
+            <Label fx:id="pushCounterLabel" text="📦 Emp: 0"
+                   style="-fx-font-size: 13px; -fx-text-fill: #e07a5f;"/>
+            <Label fx:id="timerLabel" text="⏱ 0:00"
+                   style="-fx-font-size: 13px; -fx-text-fill: #3da94f; -fx-font-weight: bold;"/>
+            <Region HBox.hgrow="ALWAYS"/>
+            <Button fx:id="undoButton" text="Deshacer" onAction="#onUndoClicked"
+                    style="-fx-font-size: 12px;"/>
+            <Button text="⏸ Pausa" onAction="#onPausaClicked"
+                    style="-fx-font-size: 12px; -fx-background-color: #2a2a4a;
+                           -fx-text-fill: #fffffe; -fx-cursor: hand;"/>
+        </HBox>
 
-    <!-- Barra de contadores -->
-    <HBox style="-fx-background-color: #1a1a2e; -fx-padding: 6 14 6 14;"
-          spacing="24">
-        <Label fx:id="playerLabel"
-               text="👤 Invitado"
-               style="-fx-font-size: 13px; -fx-text-fill: #3da9fc;"/>
-        <Label fx:id="moveCounterLabel"
-               text="Movimientos: 0"
-               style="-fx-font-size: 13px; -fx-text-fill: #f2cc8f;"/>
-        <Label fx:id="pushCounterLabel"
-               text="Empujes: 0"
-               style="-fx-font-size: 13px; -fx-text-fill: #e07a5f;"/>
-        <Region HBox.hgrow="ALWAYS"/>
-        <Button fx:id="undoButton"
-                text="Deshacer"
-                onAction="#onUndoClicked"
-                style="-fx-font-size: 12px;"/>
-    </HBox>
+        <!-- Barra de tiempo: ancho completo, altura visible, colores fuertes -->
+        <ProgressBar fx:id="timerBar"
+                     maxWidth="1.7976931348623157E308"
+                     prefHeight="16"
+                     progress="1.0"
+                     visible="false"
+                     managed="false"
+                     style="-fx-accent: #3da94f;
+                            -fx-control-inner-background: #2a2a2a;"/>
 
-    <!-- Lienzo del juego -->
-    <Canvas fx:id="gameCanvas" width="420" height="300"/>
+        <HBox fx:id="solverBox"
+              visible="false" managed="false"
+              style="-fx-background-color: #11101e; -fx-padding: 6 14 6 14;"
+              spacing="10" alignment="CENTER_LEFT">
+            <Label text="Algoritmo:" style="-fx-font-size: 13px; -fx-text-fill: #fffffe;"/>
+            <ChoiceBox fx:id="algorithmChoice"/>
+            <Button fx:id="solveButton" text="Resolver" onAction="#onSolveClicked"
+                    style="-fx-font-size: 12px;"/>
+        </HBox>
 
-</VBox>
+        <Canvas fx:id="gameCanvas" width="420" height="300"/>
 
+    </VBox>
+
+    <!-- Overlay de pausa -->
+    <StackPane fx:id="pauseOverlay"
+               visible="false"
+               style="-fx-background-color: rgba(0,0,0,0.65);">
+
+        <VBox alignment="CENTER" spacing="20"
+              style="-fx-background-color: #16152a;
+                     -fx-background-radius: 16;
+                     -fx-border-color: #3da9fc;
+                     -fx-border-radius: 16;
+                     -fx-border-width: 2;
+                     -fx-padding: 40 60 40 60;">
+
+            <Label text="⏸  PAUSA"
+                   style="-fx-font-size: 32px; -fx-font-weight: bold; -fx-text-fill: #fffffe;"/>
+
+            <Button text="▶  Reanudar" onAction="#onReanudarClicked" prefWidth="220"
+                    style="-fx-font-size: 16px; -fx-font-weight: bold;
+                           -fx-background-color: #3da9fc; -fx-text-fill: #0f0e17;
+                           -fx-background-radius: 8; -fx-cursor: hand; -fx-padding: 10 0 10 0;"/>
+
+            <Button text="🔄  Reiniciar nivel" onAction="#onReiniciarClicked" prefWidth="220"
+                    style="-fx-font-size: 16px; -fx-font-weight: bold;
+                           -fx-background-color: #f2cc8f; -fx-text-fill: #0f0e17;
+                           -fx-background-radius: 8; -fx-cursor: hand; -fx-padding: 10 0 10 0;"/>
+
+            <Button text="🏠  Volver al menú" onAction="#onVolverMenuClicked" prefWidth="220"
+                    style="-fx-font-size: 16px; -fx-font-weight: bold;
+                           -fx-background-color: #ef4565; -fx-text-fill: #fffffe;
+                           -fx-background-radius: 8; -fx-cursor: hand; -fx-padding: 10 0 10 0;"/>
+        </VBox>
+
+    </StackPane>
+
+</StackPane>

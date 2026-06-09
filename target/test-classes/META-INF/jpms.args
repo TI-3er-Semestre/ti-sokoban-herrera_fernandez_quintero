@@ -1,0 +1,4 @@
+--patch-module
+com.icesi.sokoban=_
+--add-reads
+com.icesi.sokoban=ALL-UNNAMED

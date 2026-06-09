@@ -49,18 +49,10 @@ public class MainMenuController implements Initializable {
      */
     @FXML
     private void onJugarClicked() throws IOException {
-        FXMLLoader loader = new FXMLLoader(
-                getClass().getResource("/com/icesi/sokoban/view/game.fxml"));
-        Parent root = loader.load();
-
-        // El GameController necesita que le conectemos el teclado
-        // después de crear la Scene — misma lógica que SokobanApplication.
-        GameController gameController = loader.getController();
-        Scene scene = new Scene(root);
-        gameController.attachKeyHandlers(scene);
-
-        Stage stage = (Stage) jugarButton.getScene().getWindow();
-        stage.setScene(scene);
+        // Navega a la pantalla de selección de nivel.
+        // LevelSelectController se encarga de cargar game.fxml
+        // con el nivel elegido y conectar el teclado.
+        navegarA("/com/icesi/sokoban/view/level-select.fxml");
     }
 
     /**
@@ -68,7 +60,10 @@ public class MainMenuController implements Initializable {
      */
     @FXML
     private void onRegistroClicked() throws IOException {
-        navegarA("/com/icesi/sokoban/view/player-registration.fxml");
+        Parent root = FXMLLoader.load(getClass().getResource(
+                "/com/icesi/sokoban/view/player-registration.fxml"));
+        Stage stage = (Stage) jugarButton.getScene().getWindow();
+        stage.setScene(new Scene(root));
     }
 
     /**

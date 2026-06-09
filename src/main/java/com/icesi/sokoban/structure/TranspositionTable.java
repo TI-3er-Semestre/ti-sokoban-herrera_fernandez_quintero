@@ -1,6 +1,9 @@
 package com.icesi.sokoban.structure;
 
-public class TranspositionTable {
+import java.io.Serializable;
+
+public class TranspositionTable implements Serializable {
+    private static final long serialVersionUID = 1L;
     private static final int DEFAULT_CAPACITY = 101;
     private static final double LOAD_FACTOR = 0.75;
 
@@ -8,7 +11,8 @@ public class TranspositionTable {
     private int size;
     private int capacity;
 
-    private static class Entry {
+    private static class Entry implements Serializable {
+        private static final long serialVersionUID = 1L;
         String key;
         Object value;
         Entry next;

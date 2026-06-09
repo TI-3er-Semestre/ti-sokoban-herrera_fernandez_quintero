@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.control.Button?>
+
+<!--
+    VISTA — level-select.fxml
+    Imagen de fondo con botones invisibles posicionados sobre cada nivel.
+    Ventana: 840 x 840
+-->
+<StackPane xmlns="http://javafx.com/javafx"
+           xmlns:fx="http://javafx.com/fxml"
+           fx:controller="com.icesi.sokoban.controller.LevelSelectController"
+           prefWidth="840" prefHeight="840">
+
+    <!-- Imagen de fondo -->
+    <ImageView fitWidth="840" fitHeight="840" preserveRatio="false">
+        <image>
+            <Image url="@../sprites/pages/level_select_bg.png"/>
+        </image>
+    </ImageView>
+
+    <!-- Botones invisibles -->
+    <Pane prefWidth="840" prefHeight="840">
+
+        <!-- Nivel 1 -->
+        <Button onAction="#onNivel1Clicked"
+                layoutX="107" layoutY="274"
+                prefWidth="623" prefHeight="85"
+                opacity="0.0"
+                style="-fx-cursor: hand;"/>
+
+        <!-- Nivel 2 -->
+        <Button onAction="#onNivel2Clicked"
+                layoutX="107" layoutY="369"
+                prefWidth="623" prefHeight="85"
+                opacity="0.0"
+                style="-fx-cursor: hand;"/>
+
+        <!-- Nivel 3 -->
+        <Button onAction="#onNivel3Clicked"
+                layoutX="107" layoutY="463"
+                prefWidth="623" prefHeight="85"
+                opacity="0.0"
+                style="-fx-cursor: hand;"/>
+
+        <!-- Aleatorio -->
+        <Button onAction="#onAleatorioClicked"
+                layoutX="107" layoutY="558"
+                prefWidth="623" prefHeight="85"
+                opacity="0.0"
+                style="-fx-cursor: hand;"/>
+
+        <!-- Volver -->
+        <Button fx:id="volverButton"
+                onAction="#onVolverClicked"
+                layoutX="213" layoutY="698"
+                prefWidth="410" prefHeight="40"
+                opacity="0.0"
+                style="-fx-cursor: hand;"/>
+
+    </Pane>
+
+</StackPane>
+

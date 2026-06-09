@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Button?>
+
+<VBox xmlns="http://javafx.com/javafx"
+      xmlns:fx="http://javafx.com/fxml"
+      fx:controller="com.icesi.sokoban.controller.VictoryController"
+      alignment="CENTER"
+      spacing="20"
+      style="-fx-background-color: #0f0e17; -fx-padding: 60;">
+
+    <Label text="🎉 ¡Nivel Completado!"
+           style="-fx-text-fill: #ff8906;
+                  -fx-font-size: 40px;
+                  -fx-font-weight: bold;"/>
+
+    <Label fx:id="playerNameLabel"
+           text=""
+           style="-fx-text-fill: #fffffe; -fx-font-size: 18px;"/>
+
+    <!-- Estadísticas -->
+    <VBox spacing="10" alignment="CENTER"
+          style="-fx-background-color: #16213e;
+                 -fx-padding: 24;
+                 -fx-background-radius: 10;">
+
+        <HBox spacing="60" alignment="CENTER">
+            <VBox alignment="CENTER" spacing="4">
+                <Label fx:id="movimientosLabel" text="0"
+                       style="-fx-text-fill: #f2cc8f; -fx-font-size: 32px; -fx-font-weight: bold;"/>
+                <Label text="Movimientos"
+                       style="-fx-text-fill: #a7a9be; -fx-font-size: 12px;"/>
+            </VBox>
+            <VBox alignment="CENTER" spacing="4">
+                <Label fx:id="empujesLabel" text="0"
+                       style="-fx-text-fill: #e07a5f; -fx-font-size: 32px; -fx-font-weight: bold;"/>
+                <Label text="Empujes"
+                       style="-fx-text-fill: #a7a9be; -fx-font-size: 12px;"/>
+            </VBox>
+            <VBox alignment="CENTER" spacing="4">
+                <Label fx:id="tiempoLabel" text="0:00"
+                       style="-fx-text-fill: #3da9fc; -fx-font-size: 32px; -fx-font-weight: bold;"/>
+                <Label text="Tiempo"
+                       style="-fx-text-fill: #a7a9be; -fx-font-size: 12px;"/>
+            </VBox>
+        </HBox>
+
+        <Label fx:id="puntajeLabel" text="Puntaje: 0.0"
+               style="-fx-text-fill: #ff8906;
+                      -fx-font-size: 22px;
+                      -fx-font-weight: bold;"/>
+    </VBox>
+
+    <!-- Botón siguiente nivel — visible solo si hay siguiente -->
+    <Button fx:id="siguienteButton"
+            text="Siguiente Nivel →"
+            onAction="#onSiguienteNivelClicked"
+            visible="false"
+            managed="false"
+            style="-fx-background-color: #3da94f;
+                   -fx-text-fill: #0f0e17;
+                   -fx-font-size: 16px;
+                   -fx-font-weight: bold;
+                   -fx-background-radius: 6;
+                   -fx-cursor: hand;
+                   -fx-padding: 12 32 12 32;"/>
+
+    <!-- Botones de navegación -->
+    <HBox spacing="16" alignment="CENTER">
+        <Button fx:id="rankingButton"
+                text="🏆 Ver Ranking"
+                onAction="#onVerRankingClicked"
+                style="-fx-background-color: #ff8906;
+                       -fx-text-fill: #0f0e17;
+                       -fx-font-size: 15px;
+                       -fx-font-weight: bold;
+                       -fx-background-radius: 6;
+                       -fx-cursor: hand;
+                       -fx-padding: 10 24 10 24;"/>
+        <Button fx:id="menuButton"
+                text="← Menú Principal"
+                onAction="#onMenuClicked"
+                style="-fx-background-color: #2a2a4a;
+                       -fx-text-fill: #fffffe;
+                       -fx-font-size: 15px;
+                       -fx-background-radius: 6;
+                       -fx-border-color: #555577;
+                       -fx-border-radius: 6;
+                       -fx-cursor: hand;
+                       -fx-padding: 10 24 10 24;"/>
+    </HBox>
+
+</VBox>

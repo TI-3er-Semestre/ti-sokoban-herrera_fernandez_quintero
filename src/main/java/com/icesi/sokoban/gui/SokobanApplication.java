@@ -1,19 +1,27 @@
 package com.icesi.sokoban.gui;
 
+import com.icesi.sokoban.controller.IntroController;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import javafx.event.EventHandler;
+import javafx.stage.WindowEvent;
 
 import com.icesi.sokoban.controller.MainMenuController;
+import com.icesi.sokoban.controller.GamePersistence;
+import com.icesi.sokoban.controller.GameController;
 
 /**
- * MAIN — Punto de entrada de la aplicacion.
+ * Punto de entrada de la aplicación JavaFX.
  *
- * Conecta las tres capas del patron MVC mediante el FXMLLoader.
+ * Al arrancar por primera vez:
+ *   → Carga intro.fxml (video + press any key)
+ *   → IntroController navega al menú principal cuando el usuario presiona una tecla
  *
- * Secuencia de arranque (el orden importa):
+ * Si el jugador vuelve al menú desde el juego:
+ *   → Va directo a main-menu.fxml (sin intro)
  *
  *   1. FXMLLoader.load()
  *        a. Lee game.fxml y crea todos los nodos de la interfaz.
@@ -30,6 +38,7 @@ import com.icesi.sokoban.controller.MainMenuController;
  *   4. controller.attachKeyHandlers(scene)
  *        Registra el manejo del teclado. Se hace aqui y no en initialize()
  *        porque la Scene todavia no existe cuando initialize() se ejecuta.
+ *        El objeto Game completo se serializa en savegame.dat
  *
  *   5. stage.show()
  *        Muestra la ventana, ya pintada y con el teclado conectado.
@@ -38,27 +47,48 @@ import com.icesi.sokoban.controller.MainMenuController;
  *   - El Model (model/, structure/) no tiene ningun import de JavaFX.
  *   - La Vista (game.fxml) no tiene codigo Java.
  *   - El Controller es el unico que toca ambas capas.
+ * El flag primeraVez controla que la intro solo se muestre una vez por sesión.
  */
 public class SokobanApplication extends Application {
+
+    public static boolean primeraVez = true;
 
     @Override
     public void start(Stage primaryStage) throws Exception {
 
-        // 1. Cargar el menú principal como primera pantalla
-        Parent root = FXMLLoader.load(
-                getClass().getResource("/com/icesi/sokoban/view/main-menu.fxml"));
+        Parent root;
+        Scene scene;
 
-        // 2. Construir la Scene con el menú
-        Scene scene = new Scene(root);
+        if (primeraVez) {
+            primeraVez = false;
 
-        // 3. Configurar y mostrar la ventana
-        // El menú no necesita teclado — los botones manejan la interacción.
-        // Cuando el usuario haga clic en "Jugar", MainMenuController cargará
-        // game.fxml y conectará el teclado en ese momento.
-        primaryStage.setTitle("Sokoban — Tarea Integradora");
+            FXMLLoader loader = new FXMLLoader(
+                    getClass().getResource("/com/icesi/sokoban/view/intro.fxml"));
+            root = loader.load();
+
+            IntroController introController = loader.getController();
+            scene = new Scene(root);
+            introController.attachKeyHandlers(scene);
+
+        } else {
+            root = FXMLLoader.load(
+                    getClass().getResource("/com/icesi/sokoban/view/main-menu.fxml"));
+            scene = new Scene(root);
+        }
+
+        primaryStage.setTitle("Sokoban — A Jungle Puzzle Adventure");
         primaryStage.setScene(scene);
         primaryStage.setResizable(false);
+        primaryStage.sizeToScene();
         primaryStage.show();
+        primaryStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
+            @Override
+            public void handle(WindowEvent event) {
+                if (GameController.getActiveGame() != null){
+                    GamePersistence.saveGame(GameController.getActiveGame());
+                }
+            }
+        });
     }
 
     public static void main(String[] args) {

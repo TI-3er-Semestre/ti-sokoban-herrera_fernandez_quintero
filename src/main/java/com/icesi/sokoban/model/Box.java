@@ -1,6 +1,10 @@
 package com.icesi.sokoban.model;
 
-public class Box {
+import java.io.Serializable;
+
+public class Box implements Serializable {
+    private static final long serialVersionUID = 1L;
+
     private Position position;
     private boolean onGoal;
 

@@ -1,0 +1,4 @@
+-------------------------------------------------------------------------------
+Test set: com.icesi.sokoban.structure.CustomStackTest
+-------------------------------------------------------------------------------
+Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.005 s -- in com.icesi.sokoban.structure.CustomStackTest

@@ -1,8 +1,10 @@
 package com.icesi.sokoban.model;
 
 import com.icesi.sokoban.structure.CustomLinkedList;
+import java.io.Serializable;
 
-public class Board {
+public class Board implements Serializable {
+    private static final long serialVersionUID =1L;
     private char[][] grid;
     private int width;
     private int height;
