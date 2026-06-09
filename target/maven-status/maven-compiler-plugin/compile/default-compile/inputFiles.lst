@@ -1,11 +1,16 @@
 C:\Users\geova\Documents\APO2_2026\ti-sokoban-herrera_fernandez_quintero\src\main\java\com\icesi\sokoban\controller\EstadoSokoban.java
 C:\Users\geova\Documents\APO2_2026\ti-sokoban-herrera_fernandez_quintero\src\main\java\com\icesi\sokoban\controller\GameController.java
+C:\Users\geova\Documents\APO2_2026\ti-sokoban-herrera_fernandez_quintero\src\main\java\com\icesi\sokoban\controller\GameOverController.java
+C:\Users\geova\Documents\APO2_2026\ti-sokoban-herrera_fernandez_quintero\src\main\java\com\icesi\sokoban\controller\GamePersistence.java
+C:\Users\geova\Documents\APO2_2026\ti-sokoban-herrera_fernandez_quintero\src\main\java\com\icesi\sokoban\controller\LevelSelectController.java
 C:\Users\geova\Documents\APO2_2026\ti-sokoban-herrera_fernandez_quintero\src\main\java\com\icesi\sokoban\controller\MainMenuController.java
 C:\Users\geova\Documents\APO2_2026\ti-sokoban-herrera_fernandez_quintero\src\main\java\com\icesi\sokoban\controller\ManualController.java
+C:\Users\geova\Documents\APO2_2026\ti-sokoban-herrera_fernandez_quintero\src\main\java\com\icesi\sokoban\controller\MstSolver.java
 C:\Users\geova\Documents\APO2_2026\ti-sokoban-herrera_fernandez_quintero\src\main\java\com\icesi\sokoban\controller\PlayerRegistrationController.java
 C:\Users\geova\Documents\APO2_2026\ti-sokoban-herrera_fernandez_quintero\src\main\java\com\icesi\sokoban\controller\PlayerRegistry.java
 C:\Users\geova\Documents\APO2_2026\ti-sokoban-herrera_fernandez_quintero\src\main\java\com\icesi\sokoban\controller\RankingController.java
 C:\Users\geova\Documents\APO2_2026\ti-sokoban-herrera_fernandez_quintero\src\main\java\com\icesi\sokoban\controller\SokobanSolver.java
+C:\Users\geova\Documents\APO2_2026\ti-sokoban-herrera_fernandez_quintero\src\main\java\com\icesi\sokoban\controller\VictoryController.java
 C:\Users\geova\Documents\APO2_2026\ti-sokoban-herrera_fernandez_quintero\src\main\java\com\icesi\sokoban\gui\Launcher.java
 C:\Users\geova\Documents\APO2_2026\ti-sokoban-herrera_fernandez_quintero\src\main\java\com\icesi\sokoban\gui\SokobanApplication.java
 C:\Users\geova\Documents\APO2_2026\ti-sokoban-herrera_fernandez_quintero\src\main\java\com\icesi\sokoban\model\Board.java
@@ -25,6 +30,7 @@ C:\Users\geova\Documents\APO2_2026\ti-sokoban-herrera_fernandez_quintero\src\mai
 C:\Users\geova\Documents\APO2_2026\ti-sokoban-herrera_fernandez_quintero\src\main\java\com\icesi\sokoban\structure\CustomQueue.java
 C:\Users\geova\Documents\APO2_2026\ti-sokoban-herrera_fernandez_quintero\src\main\java\com\icesi\sokoban\structure\CustomStack.java
 C:\Users\geova\Documents\APO2_2026\ti-sokoban-herrera_fernandez_quintero\src\main\java\com\icesi\sokoban\structure\graph\Arista.java
+C:\Users\geova\Documents\APO2_2026\ti-sokoban-herrera_fernandez_quintero\src\main\java\com\icesi\sokoban\structure\graph\GrafoLista.java
 C:\Users\geova\Documents\APO2_2026\ti-sokoban-herrera_fernandez_quintero\src\main\java\com\icesi\sokoban\structure\graph\GrafoMatriz.java
 C:\Users\geova\Documents\APO2_2026\ti-sokoban-herrera_fernandez_quintero\src\main\java\com\icesi\sokoban\structure\graph\IGrafo.java
 C:\Users\geova\Documents\APO2_2026\ti-sokoban-herrera_fernandez_quintero\src\main\java\com\icesi\sokoban\structure\graph\UnionFind.java

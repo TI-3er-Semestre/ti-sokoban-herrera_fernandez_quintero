@@ -89,6 +89,6 @@ public class GamePersistenceTest {
     @Test
     public void load_ArchivoInexistente_RetornaNull(){
         File archivo = new File("no_existe_esta_partida_12345.dat");
-        assertNotNull(GamePersistence.load(archivo), "Cargar un archivo inexistente debe retornar null");
+        assertNull(GamePersistence.load(archivo), "Cargar un archivo inexistente debe retornar null");
     }
 }
